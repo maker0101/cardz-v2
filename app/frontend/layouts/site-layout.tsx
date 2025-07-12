@@ -1,6 +1,6 @@
-import {Cart} from './cart';
-import {LoginButton} from './login-button';
-import {Link} from './link';
+import {Cart} from 'app/frontend/components/cart';
+import {LoginButton} from 'app/frontend/components/login-button';
+import {Link} from 'app/frontend/ui/link';
 
 export function SiteLayout({children}: {children: React.ReactNode}) {
   return (

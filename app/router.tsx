@@ -1,10 +1,9 @@
-// app/router.tsx
 import {createRouter as createTanStackRouter} from '@tanstack/react-router';
-import {routeTree} from './routeTree.gen';
+import {routeTree} from 'app/routeTree.gen';
 import {Zero} from '@rocicorp/zero';
 import {Schema} from 'zero/schema';
 import {Mutators} from 'zero/mutators';
-import {SessionContextType} from './components/session-init';
+import {SessionContextType} from 'app/frontend/providers/session-provider';
 
 export interface RouterContext {
   zero: Zero<Schema, Mutators>;

@@ -1,5 +1,5 @@
 import {Zero} from '@rocicorp/zero';
-import {ZeroProvider} from '@rocicorp/zero/react';
+import {ZeroProvider as ZeroProviderRocicorp} from '@rocicorp/zero/react';
 import {schema, Schema} from 'zero/schema';
 import {useMemo} from 'react';
 import {createMutators, Mutators} from 'zero/mutators';
@@ -11,7 +11,7 @@ const serverURL = must(
   'VITE_PUBLIC_SERVER is required',
 );
 
-export function ZeroInit({children}: {children: React.ReactNode}) {
+export function ZeroProvider({children}: {children: React.ReactNode}) {
   const router = useRouter();
   const {session} = router.options.context;
 
@@ -39,7 +39,7 @@ export function ZeroInit({children}: {children: React.ReactNode}) {
     };
   }, [session.data?.userID, router]);
 
-  return <ZeroProvider {...opts}>{children}</ZeroProvider>;
+  return <ZeroProviderRocicorp {...opts}>{children}</ZeroProviderRocicorp>;
 }
 
 function preload(z: Zero<Schema>) {

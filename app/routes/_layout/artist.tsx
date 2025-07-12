@@ -3,23 +3,37 @@ import {Zero} from '@rocicorp/zero';
 import {createFileRoute, useRouter} from '@tanstack/react-router';
 import {Schema} from 'zero/schema';
 import {Mutators} from 'zero/mutators';
-import {Button} from 'app/components/button';
+import {Button} from 'app/frontend/ui/button';
 
-function query(zero: Zero<Schema, Mutators>, artistID: string | undefined) {
+const artistQuery = (
+  zero: Zero<Schema, Mutators>,
+  artistID: string | undefined,
+) => {
   return zero.query.artist
     .where('id', artistID ?? '')
     .related('albums', album => album.related('cartItems'))
     .one();
-}
+};
+
+const useArtist = (
+  zero: Zero<Schema, Mutators>,
+  artistID: string | undefined,
+) => {
+  const [artist, {type}] = useQuery(artistQuery(zero, artistID), {
+    ttl: '5m',
+    enabled: !!artistID,
+  });
+  return {artist, type};
+};
 
 export const Route = createFileRoute('/_layout/artist')({
-  component: RouteComponent,
+  component: ArtistPage,
   ssr: false,
   loaderDeps: ({search}) => ({artistId: search.id}),
   loader: async ({context, deps: {artistId}}) => {
     const {zero} = context;
     console.log('preloading artist', artistId);
-    query(zero, artistId).preload({ttl: '5m'}).cleanup();
+    artistQuery(zero, artistId).preload({ttl: '5m'}).cleanup();
   },
   validateSearch: (search: Record<string, unknown>) => {
     return {
@@ -28,37 +42,19 @@ export const Route = createFileRoute('/_layout/artist')({
   },
 });
 
-function RouteComponent() {
+function ArtistPage() {
   const {zero, session} = useRouter().options.context;
   const {id} = Route.useSearch();
+  const {artist, type} = useArtist(zero, id);
 
-  if (!id) {
-    return <div>Missing required search parameter id</div>;
-  }
-
-  const [artist, {type}] = useQuery(query(zero, id), {ttl: '5m'});
-
-  if (!artist && type === 'complete') {
-    return <div>Artist not found</div>;
-  }
-
-  if (!artist) {
-    return null;
-  }
-
-  const cartButton = (album: (typeof artist.albums)[number]) => {
-    if (!session.data) {
-      return <Button disabled>Login to shop</Button>;
-    }
-
-    const message =
-      album.cartItems.length > 0 ? 'Remove from cart' : 'Add to cart';
-    const action =
-      album.cartItems.length > 0
-        ? () => zero.mutate.cart.remove(album.id)
-        : () => zero.mutate.cart.add({albumID: album.id, addedAt: Date.now()});
-    return <Button onPress={action}>{message}</Button>;
+  const handlePress = (albumId: string, isInCart: boolean) => {
+    if (isInCart) zero.mutate.cart.remove(albumId);
+    else zero.mutate.cart.add({albumID: albumId, addedAt: Date.now()});
   };
+
+  if (!artist && type === 'complete') return <div>Artist not found</div>;
+  if (!artist) return null;
+  if (!id) return <div>Missing required search parameter id</div>;
 
   return (
     <>
@@ -66,10 +62,37 @@ function RouteComponent() {
       <ul>
         {artist.albums.map(album => (
           <li key={album.id}>
-            {album.title} ({album.year}) {cartButton(album)}
+            {album.title} ({album.year}){' '}
+            <CartButton
+              isInCart={album.cartItems.length > 0}
+              isDisabled={!session.data}
+              onPress={() => handlePress(album.id, album.cartItems.length > 0)}
+            />
           </li>
         ))}
       </ul>
     </>
   );
 }
+
+const CartButton = ({
+  isInCart,
+  isDisabled,
+  onPress,
+}: {
+  isInCart: boolean;
+  isDisabled: boolean;
+  onPress: () => void;
+}) => {
+  const getMessage = () => {
+    if (isDisabled) return 'Login to shop';
+    if (isInCart) return 'Remove from cart';
+    return 'Add to cart';
+  };
+
+  return (
+    <Button onPress={onPress} disabled={isDisabled}>
+      {getMessage()}
+    </Button>
+  );
+};

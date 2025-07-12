@@ -1,9 +1,9 @@
 import {createFileRoute, Outlet} from '@tanstack/react-router';
-import {SessionInit} from 'app/components/session-init';
-import {ZeroInit} from 'app/components/zero-init';
+import {SessionProvider} from 'app/frontend/providers/session-provider';
+import {ZeroProvider} from 'app/frontend/providers/zero-provider';
 import {createServerFn} from '@tanstack/react-start';
-import {SiteLayout} from 'app/components/site-layout';
-import {CookiesProvider} from 'react-cookie';
+import {SiteLayout} from 'app/frontend/layouts/site-layout';
+import {CookiesProvider} from 'app/frontend/providers/cookies-provider';
 
 export const getAuthFromHeaders = createServerFn().handler(async () => {});
 
@@ -15,13 +15,13 @@ export const Route = createFileRoute('/_layout')({
 function RouteComponent() {
   return (
     <CookiesProvider>
-      <SessionInit>
-        <ZeroInit>
+      <SessionProvider>
+        <ZeroProvider>
           <SiteLayout>
             <Outlet />
           </SiteLayout>
-        </ZeroInit>
-      </SessionInit>
+        </ZeroProvider>
+      </SessionProvider>
     </CookiesProvider>
   );
 }

@@ -3,19 +3,21 @@ import {authClient} from 'auth/client';
 import {Cookies, useCookies} from 'react-cookie';
 import {RouterContextProvider, useRouter} from '@tanstack/react-router';
 
+export type SessionDataType =
+  | {
+      userID: string;
+      email: string;
+    }
+  | undefined;
+
 export type SessionContextType = {
-  data:
-    | {
-        userID: string;
-        email: string;
-      }
-    | undefined;
+  data: SessionDataType;
   login: () => void;
   logout: () => void;
   zeroAuth: () => Promise<string | undefined>;
 };
 
-export function SessionInit({children}: {children: React.ReactNode}) {
+export function SessionProvider({children}: {children: React.ReactNode}) {
   const [cookies] = useCookies(['userid', 'email', 'jwt']);
 
   const data = useMemo(() => {

@@ -1,5 +1,5 @@
 import {useRouter} from '@tanstack/react-router';
-import {Button} from './button';
+import {Button} from 'app/frontend/ui/button';
 
 export function LoginButton() {
   const {session} = useRouter().options.context;

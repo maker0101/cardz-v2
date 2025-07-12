@@ -11,6 +11,7 @@ export {schema, type Schema};
 
 export type Artist = Row<typeof schema.tables.artist>;
 export type Album = Row<typeof schema.tables.album>;
+export type CartItem = Row<typeof schema.tables.cartItem>;
 
 export type AuthData = {
   // The logged-in user.
