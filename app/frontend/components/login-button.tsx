@@ -1,5 +1,5 @@
 import {useRouter} from '@tanstack/react-router';
-import {Button} from 'app/frontend/ui/button';
+import {CustomButton} from '@/frontend/ui/custom-button';
 
 export function LoginButton() {
   const {session} = useRouter().options.context;
@@ -7,9 +7,9 @@ export function LoginButton() {
     return (
       <div>
         {session.data.email}{' '}
-        <Button onPress={() => session.logout()}>Sign out</Button>
+        <CustomButton onPress={() => session.logout()}>Sign out</CustomButton>
       </div>
     );
   }
-  return <Button onPress={() => session.login()}>Sign in</Button>;
+  return <CustomButton onPress={() => session.login()}>Sign in</CustomButton>;
 }

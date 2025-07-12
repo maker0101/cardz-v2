@@ -3,7 +3,7 @@ import {Zero} from '@rocicorp/zero';
 import {createFileRoute, useRouter} from '@tanstack/react-router';
 import {Schema} from 'zero/schema';
 import {Mutators} from 'zero/mutators';
-import {Button} from 'app/frontend/ui/button';
+import {CustomButton} from '@/frontend/ui/custom-button';
 
 const artistQuery = (
   zero: Zero<Schema, Mutators>,
@@ -91,8 +91,8 @@ const CartButton = ({
   };
 
   return (
-    <Button onPress={onPress} disabled={isDisabled}>
+    <CustomButton onPress={onPress} disabled={isDisabled}>
       {getMessage()}
-    </Button>
+    </CustomButton>
   );
 };

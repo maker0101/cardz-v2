@@ -7,7 +7,7 @@ import {
   Scripts,
 } from '@tanstack/react-router';
 import {must} from 'shared/must';
-import appCss from '@/styles/app.css?url';
+import appCss from '@/frontend/styles/app.css?url';
 import type {RouterContext} from 'app/router';
 
 export const Route = createRootRouteWithContext<RouterContext>()({

@@ -2,7 +2,7 @@ import {useQuery} from '@rocicorp/zero/react';
 import {createFileRoute, useRouter} from '@tanstack/react-router';
 import {Mutators} from 'zero/mutators';
 import {Schema} from 'zero/schema';
-import {Button} from 'app/frontend/ui/button';
+import {CustomButton} from '@/frontend/ui/custom-button';
 import {Zero} from '@rocicorp/zero';
 
 const cartQuery = (z: Zero<Schema, Mutators>, userID: string | undefined) => {
@@ -55,7 +55,9 @@ function CartPage() {
                   {item.album?.title} ({item.album?.artist?.name})
                 </td>
                 <td style={{paddingLeft: '1em'}}>
-                  <Button onPress={() => onRemove(item.albumId)}>Remove</Button>
+                  <CustomButton onPress={() => onRemove(item.albumId)}>
+                    Remove
+                  </CustomButton>
                 </td>
               </tr>
             ) : null,
