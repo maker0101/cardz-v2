@@ -1,0 +1,144 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Rule: Effective Debugging and Investigation Logging
+
+## 1. Goal
+
+To guide an AI assistant or developer in systematically debugging issues and meticulously documenting the investigation process. This ensures clarity, facilitates collaboration, preserves learnings, and helps in efficiently resolving current and future problems.
+
+## 2. Process Overview
+
+1.  **Define the Problem:** Clearly articulate the issue, expected behavior, and actual behavior. Gather initial evidence (error messages, screenshots, steps to reproduce).
+2.  **Formulate Initial Hypotheses:** Based on the initial information, list potential causes.
+3.  **Systematic Testing:**
+    *   Choose the most likely hypothesis.
+    *   Design a test (e.g., code change, specific input, environment adjustment).
+    *   Execute the test and observe the outcome.
+4.  **Document Rigorously:** Record every step, hypothesis, test, observation, and learning in a dedicated debug log file (see section 5).
+5.  **Iterate:**
+    *   If a hypothesis is disproven, move to the next one or formulate new ones based on learnings.
+    *   If a hypothesis is confirmed or leads to a solution, document the fix.
+    *   If stuck, review the log, simplify the problem further, or seek external input.
+6.  **Summarize Learnings:** Once the issue is resolved or the investigation concludes, summarize key findings and the solution.
+
+## 3. Debugging Best Practices & Strategies
+
+### Foundational Techniques:
+
+*   **Reproduce Consistently:** Ensure you can reliably trigger the bug.
+*   **Isolate the Issue (Divide and Conquer):**
+    *   **Comment out code:** Sequentially comment out sections of code to identify the problematic block.
+    *   **Simplify the use case:** Reduce complexity of inputs or steps.
+    *   **Binary search in history:** If a regression, use `git bisect` or manually check commits to find when the bug was introduced.
+*   **Read the Error Message Carefully:** Understand every part of it. Search for specific error codes or messages.
+*   **Incremental Changes:** Make one change at a time and observe its effect. Avoid making multiple changes simultaneously.
+*   **Verify Assumptions:** Question your understanding of how code or systems are supposed to work.
+
+### Observation & Data Gathering:
+
+*   **Logging:** Add detailed logging around suspected areas. Include variable states, execution flow, and timestamps.
+*   **Debuggers:** Utilize interactive debuggers to step through code, inspect variables, and understand runtime behavior.
+*   **Network Inspection:** Use browser developer tools (Network tab) or tools like Wireshark to inspect API requests/responses, headers, and timings.
+*   **State Inspection:** For UI issues, use React DevTools, Redux DevTools, or similar to inspect component state and props.
+
+### Advanced & AI-Assisted Strategies:
+
+*   **Hypothesis-Driven Approach:** Always clearly state what you think is wrong and how you plan to test it.
+*   **Rubber Ducking:** Explain the problem to someone else or an inanimate object (like a rubber duck or an AI). The act of articulation can often reveal solutions.
+*   **Semantic Code Search:** Use AI tools to search the codebase for semantically similar code patterns or error handling related to the issue.
+*   **Log Analysis:** For complex issues with extensive logs, use tools (or AI) to help identify patterns, anomalies, or relevant error sequences.
+*   **Environment Comparison:** If the issue occurs in one environment but not another, systematically compare configurations, data, and deployed code versions.
+*   **Minimal Reproducible Example:** Create the smallest possible piece of code that still exhibits the bug. This is invaluable for isolating the problem and for seeking help.
+
+## 4. Debug Log File
+
+Create and maintain a dedicated Markdown file for each significant debugging effort.
+
+*   **Location:** `/tasks` (Create this directory if it doesn't exist)
+*   **Filename:** `debug-[concise-issue-summary].md`
+
+### Debug Log Structure:
+
+```markdown
+# Debug Log: [Brief Issue Title - e.g., SSR Hydration Mismatch on Study Page]
+
+**Date:** YYYY-MM-DD
+**Reported By:** [Name or Team]
+**Status:** [Open / In Progress / Resolved / On Hold]
+
+## 1. Issue Summary
+
+*   **Problem:** (Detailed description of the bug, what is happening vs. what is expected)
+*   **Steps to Reproduce:**
+    1.  ...
+    2.  ...
+*   **Initial Error Messages/Evidence:** (Paste relevant logs, screenshots, etc.)
+
+## 2. Initial Analysis & Observations
+
+*   (What was noticed immediately? What systems/components seem involved?)
+*   (Any initial theories or gut feelings?)
+
+## 3. Active/Tested Hypotheses
+
+| Hypothesis                                      | Test Plan                                        | Outcome & Learnings                                                               | Status    |
+| :---------------------------------------------- | :----------------------------------------------- | :-------------------------------------------------------------------------------- | :-------- |
+| e.g., Server rendering different HTML than client | Inspect server output vs. client initial render. | Server sends `disabled` true, client expects false. Mismatch confirmed.           | Confirmed |
+| e.g., Incorrect API response for user X         | Call API directly with user X credentials.       | API response is correct. Issue likely not in API data.                            | Disproven |
+|                                                 |                                                  |                                                                                   |           |
+
+## 4. Investigation Log (Chronological)
+
+**YYYY-MM-DD HH:MM - [Your Name/AI]**
+*   **Action:** (e.g., Added logging to `MyComponent.tsx` around `useEffect` hook)
+*   **Code (if changed):** (Brief diff or link to commit)
+    ```typescript
+    // ...
+    useEffect(() => {
+      console.log('State in useEffect:', state);
+      // ...
+    }, [state]);
+    // ...
+    ```
+*   **Observation:** (e.g., Log shows `state` is unexpectedly `null` on first render)
+*   **Next Step:** (e.g., Investigate why `state` is `null`)
+
+**YYYY-MM-DD HH:MM - [Your Name/AI]**
+*   **Action:** (e.g., Commented out `<ProblematicComponent />`)
+*   **Observation:** (e.g., Hydration error disappeared. Issue is likely within or caused by `<ProblematicComponent />`)
+*   **Next Step:** (e.g., Investigate `ProblematicComponent` internals)
+
+## 5. Key Findings & Learnings
+
+*   (Summarize the most important insights gained, even from dead ends)
+*   (e.g., Zero's `useQuery` behaves differently on server vs. client initial render regarding `details.type`)
+
+## 6. Solution (If Found)
+
+*   **Description:** (How was the issue fixed?)
+*   **Relevant Code Changes:** (Link to PR/commit, or key diffs)
+*   **Verification Steps:** (How to confirm the fix works)
+
+## 7. Next Steps / Open Questions (If Unresolved)
+
+*   (What is the plan moving forward?)
+*   (Any outstanding questions that need answers?)
+
+## 8. Relevant Files & Resources
+
+*   `src/components/MyComponent.tsx` - Main component involved.
+*   `DEBUG_SSR_HYDRATION.md` - Related investigation.
+*   [Link to Zero docs on SSR]
+```
+
+## 5. AI Assistant Instructions
+
+*   **Proactive Logging:** When assisting with debugging, proactively offer to create or update a debug log using the structure above.
+*   **Follow the Process:** Adhere to the systematic debugging process.
+*   **Document Diligently:** Ensure all actions, hypotheses, and findings are recorded.
+*   **Leverage Tools:** Suggest and use appropriate debugging tools and techniques.
+*   **Summarize:** At the end of a debugging session or resolution, provide a concise summary for the log.
+---
