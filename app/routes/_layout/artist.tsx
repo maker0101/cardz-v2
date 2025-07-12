@@ -58,7 +58,7 @@ function ArtistPage() {
 
   return (
     <>
-      <h1>{artist.name}</h1>
+      <h1 className="text-2xl font-bold text-blue-700">{artist.name}</h1>
       <ul>
         {artist.albums.map(album => (
           <li key={album.id}>
