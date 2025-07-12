@@ -5,8 +5,8 @@ import './shared/env';
 const pgURL = must(process.env.PG_URL, 'PG_URL is required');
 
 export default defineConfig({
-  out: './db/migrations',
-  schema: './db/schema.ts',
+  out: './backend/db/migrations',
+  schema: './backend/db/schema.ts',
   dialect: 'postgresql',
   strict: true,
   dbCredentials: {

@@ -16,7 +16,7 @@
  */
 
 import type {DrizzleToZeroSchema, ZeroCustomType} from 'drizzle-zero';
-import type * as drizzleSchema from '../db/schema';
+import type * as drizzleSchema from '../backend/db/schema';
 
 type ZeroSchema = DrizzleToZeroSchema<typeof drizzleSchema>;
 

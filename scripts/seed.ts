@@ -1,14 +1,14 @@
 import {fileURLToPath} from 'url';
 import {dirname, join} from 'path';
 import * as fs from 'fs';
-import {db} from 'db/index';
+import {db} from '../backend/db/index';
 import {sql} from 'drizzle-orm';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 async function seed() {
-  const sqlFilePath = join(__dirname, '../db/seed.sql.data');
+  const sqlFilePath = join(__dirname, '../backend/db/seed.sql.data');
   const sqlContent = fs.readFileSync(sqlFilePath, 'utf-8');
 
   try {

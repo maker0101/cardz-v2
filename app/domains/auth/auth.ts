@@ -1,8 +1,8 @@
 import {betterAuth} from 'better-auth';
 import {drizzleAdapter} from 'better-auth/adapters/drizzle';
-import {db} from 'db';
+import {db} from '../../../backend/db/index';
 import {must} from 'shared/must';
-import * as schema from 'db/schema';
+import * as schema from '../../../backend/db/schema';
 import {createAuthMiddleware, jwt} from 'better-auth/plugins';
 import cookie from 'cookie';
 

@@ -26,7 +26,7 @@ concurrently([
   },
   {
     command:
-      "chokidar 'db/schema.ts' 'auth/schema.ts' -c 'npm run generate-zero-schema'",
+      "chokidar 'backend/db/schema.ts' -c 'npm run generate-zero-schema'",
     name: 'gz',
     prefixColor: '#11ffcc',
   },
