@@ -1,5 +1,5 @@
 import {useMemo} from 'react';
-import {authClient} from 'auth/client';
+import {authClient} from 'app/domains/auth/client';
 import {Cookies, useCookies} from 'react-cookie';
 import {RouterContextProvider, useRouter} from '@tanstack/react-router';
 

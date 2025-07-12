@@ -10,7 +10,7 @@ import {createMutators} from 'zero/mutators';
 import * as jose from 'jose';
 import {must} from 'shared/must';
 import {createServerFileRoute} from '@tanstack/react-start/server';
-import {auth} from 'auth/auth';
+import {auth} from 'app/domains/auth/auth';
 
 const pgURL = must(process.env.PG_URL, 'PG_URL is required');
 

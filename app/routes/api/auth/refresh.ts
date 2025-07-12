@@ -1,5 +1,5 @@
 import {createServerFileRoute} from '@tanstack/react-start/server';
-import {auth, setCookies} from 'auth/auth';
+import {auth, setCookies} from 'app/domains/auth/auth';
 
 export const ServerRoute = createServerFileRoute('/api/auth/refresh').methods({
   GET: async ({request}) => {

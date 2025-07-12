@@ -2,7 +2,7 @@ import {betterAuth} from 'better-auth';
 import {drizzleAdapter} from 'better-auth/adapters/drizzle';
 import {db} from 'db';
 import {must} from 'shared/must';
-import * as schema from './schema';
+import * as schema from 'db/schema';
 import {createAuthMiddleware, jwt} from 'better-auth/plugins';
 import cookie from 'cookie';
 
