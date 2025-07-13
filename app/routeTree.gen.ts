@@ -13,7 +13,11 @@ import { createServerRootRoute } from '@tanstack/react-start/server'
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as LayoutRouteRouteImport } from './routes/_layout/route'
 import { Route as LayoutIndexRouteImport } from './routes/_layout/index'
+import { Route as LayoutStudyRouteImport } from './routes/_layout/study'
+import { Route as LayoutSettingsRouteImport } from './routes/_layout/settings'
+import { Route as LayoutProgressRouteImport } from './routes/_layout/progress'
 import { Route as LayoutCartRouteImport } from './routes/_layout/cart'
+import { Route as LayoutCardsRouteImport } from './routes/_layout/cards'
 import { Route as LayoutArtistRouteImport } from './routes/_layout/artist'
 import { ServerRoute as ApiZeroPushServerRouteImport } from './routes/api/zero/push'
 import { ServerRoute as ApiAuthRefreshServerRouteImport } from './routes/api/auth/refresh'
@@ -30,9 +34,29 @@ const LayoutIndexRoute = LayoutIndexRouteImport.update({
   path: '/',
   getParentRoute: () => LayoutRouteRoute,
 } as any)
+const LayoutStudyRoute = LayoutStudyRouteImport.update({
+  id: '/study',
+  path: '/study',
+  getParentRoute: () => LayoutRouteRoute,
+} as any)
+const LayoutSettingsRoute = LayoutSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => LayoutRouteRoute,
+} as any)
+const LayoutProgressRoute = LayoutProgressRouteImport.update({
+  id: '/progress',
+  path: '/progress',
+  getParentRoute: () => LayoutRouteRoute,
+} as any)
 const LayoutCartRoute = LayoutCartRouteImport.update({
   id: '/cart',
   path: '/cart',
+  getParentRoute: () => LayoutRouteRoute,
+} as any)
+const LayoutCardsRoute = LayoutCardsRouteImport.update({
+  id: '/cards',
+  path: '/cards',
   getParentRoute: () => LayoutRouteRoute,
 } as any)
 const LayoutArtistRoute = LayoutArtistRouteImport.update({
@@ -58,31 +82,61 @@ const ApiAuthSplatServerRoute = ApiAuthSplatServerRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/artist': typeof LayoutArtistRoute
+  '/cards': typeof LayoutCardsRoute
   '/cart': typeof LayoutCartRoute
+  '/progress': typeof LayoutProgressRoute
+  '/settings': typeof LayoutSettingsRoute
+  '/study': typeof LayoutStudyRoute
   '/': typeof LayoutIndexRoute
 }
 export interface FileRoutesByTo {
   '/artist': typeof LayoutArtistRoute
+  '/cards': typeof LayoutCardsRoute
   '/cart': typeof LayoutCartRoute
+  '/progress': typeof LayoutProgressRoute
+  '/settings': typeof LayoutSettingsRoute
+  '/study': typeof LayoutStudyRoute
   '/': typeof LayoutIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_layout': typeof LayoutRouteRouteWithChildren
   '/_layout/artist': typeof LayoutArtistRoute
+  '/_layout/cards': typeof LayoutCardsRoute
   '/_layout/cart': typeof LayoutCartRoute
+  '/_layout/progress': typeof LayoutProgressRoute
+  '/_layout/settings': typeof LayoutSettingsRoute
+  '/_layout/study': typeof LayoutStudyRoute
   '/_layout/': typeof LayoutIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/artist' | '/cart' | '/'
+  fullPaths:
+    | '/artist'
+    | '/cards'
+    | '/cart'
+    | '/progress'
+    | '/settings'
+    | '/study'
+    | '/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/artist' | '/cart' | '/'
+  to:
+    | '/artist'
+    | '/cards'
+    | '/cart'
+    | '/progress'
+    | '/settings'
+    | '/study'
+    | '/'
   id:
     | '__root__'
     | '/_layout'
     | '/_layout/artist'
+    | '/_layout/cards'
     | '/_layout/cart'
+    | '/_layout/progress'
+    | '/_layout/settings'
+    | '/_layout/study'
     | '/_layout/'
   fileRoutesById: FileRoutesById
 }
@@ -135,11 +189,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LayoutIndexRouteImport
       parentRoute: typeof LayoutRouteRoute
     }
+    '/_layout/study': {
+      id: '/_layout/study'
+      path: '/study'
+      fullPath: '/study'
+      preLoaderRoute: typeof LayoutStudyRouteImport
+      parentRoute: typeof LayoutRouteRoute
+    }
+    '/_layout/settings': {
+      id: '/_layout/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof LayoutSettingsRouteImport
+      parentRoute: typeof LayoutRouteRoute
+    }
+    '/_layout/progress': {
+      id: '/_layout/progress'
+      path: '/progress'
+      fullPath: '/progress'
+      preLoaderRoute: typeof LayoutProgressRouteImport
+      parentRoute: typeof LayoutRouteRoute
+    }
     '/_layout/cart': {
       id: '/_layout/cart'
       path: '/cart'
       fullPath: '/cart'
       preLoaderRoute: typeof LayoutCartRouteImport
+      parentRoute: typeof LayoutRouteRoute
+    }
+    '/_layout/cards': {
+      id: '/_layout/cards'
+      path: '/cards'
+      fullPath: '/cards'
+      preLoaderRoute: typeof LayoutCardsRouteImport
       parentRoute: typeof LayoutRouteRoute
     }
     '/_layout/artist': {
@@ -179,13 +261,21 @@ declare module '@tanstack/react-start/server' {
 
 interface LayoutRouteRouteChildren {
   LayoutArtistRoute: typeof LayoutArtistRoute
+  LayoutCardsRoute: typeof LayoutCardsRoute
   LayoutCartRoute: typeof LayoutCartRoute
+  LayoutProgressRoute: typeof LayoutProgressRoute
+  LayoutSettingsRoute: typeof LayoutSettingsRoute
+  LayoutStudyRoute: typeof LayoutStudyRoute
   LayoutIndexRoute: typeof LayoutIndexRoute
 }
 
 const LayoutRouteRouteChildren: LayoutRouteRouteChildren = {
   LayoutArtistRoute: LayoutArtistRoute,
+  LayoutCardsRoute: LayoutCardsRoute,
   LayoutCartRoute: LayoutCartRoute,
+  LayoutProgressRoute: LayoutProgressRoute,
+  LayoutSettingsRoute: LayoutSettingsRoute,
+  LayoutStudyRoute: LayoutStudyRoute,
   LayoutIndexRoute: LayoutIndexRoute,
 }
 

@@ -4,6 +4,7 @@ import {ZeroProvider} from 'app/frontend/providers/zero-provider';
 import {createServerFn} from '@tanstack/react-start';
 import {SiteLayout} from 'app/frontend/layouts/site-layout';
 import {CookiesProvider} from 'app/frontend/providers/cookies-provider';
+import {KeyboardShortcutsProvider} from '@/frontend/providers/keyboard-shortcuts-provider';
 
 export const getAuthFromHeaders = createServerFn().handler(async () => {});
 
@@ -17,9 +18,11 @@ function RouteComponent() {
     <CookiesProvider>
       <SessionProvider>
         <ZeroProvider>
-          <SiteLayout>
-            <Outlet />
-          </SiteLayout>
+          <KeyboardShortcutsProvider>
+            <SiteLayout>
+              <Outlet />
+            </SiteLayout>
+          </KeyboardShortcutsProvider>
         </ZeroProvider>
       </SessionProvider>
     </CookiesProvider>
