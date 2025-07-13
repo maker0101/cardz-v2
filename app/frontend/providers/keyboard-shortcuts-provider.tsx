@@ -14,7 +14,7 @@ export const KeyboardShortcutsProvider = (
 ) => {
   const {children, initialScopes = ['global']} = props;
 
-  // Render a separate component so the hook runs **after** the HotkeysProvider
+  // Note: Ensures the hook runs **after** the HotkeysProvider is initialized
   const KeyboardShortcutsInit = () => {
     useKeyboardShortcuts();
     return null;
