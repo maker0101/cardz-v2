@@ -1,10 +1,11 @@
 import {createFileRoute, Outlet} from '@tanstack/react-router';
-import {SessionProvider} from 'app/frontend/providers/session-provider';
-import {ZeroProvider} from 'app/frontend/providers/zero-provider';
+import {SessionProvider} from '@/frontend/providers/session-provider';
+import {ZeroProvider} from '@/frontend/providers/zero-provider';
 import {createServerFn} from '@tanstack/react-start';
-import {SiteLayout} from 'app/frontend/layouts/site-layout';
-import {CookiesProvider} from 'app/frontend/providers/cookies-provider';
+import {SiteLayout} from '@/frontend/layouts/site-layout';
+import {CookiesProvider} from '@/frontend/providers/cookies-provider';
 import {KeyboardShortcutsProvider} from '@/frontend/providers/keyboard-shortcuts-provider';
+import {Toaster} from '@/frontend/ui/sonner';
 
 export const getAuthFromHeaders = createServerFn().handler(async () => {});
 
@@ -21,6 +22,7 @@ function RouteComponent() {
           <KeyboardShortcutsProvider>
             <SiteLayout>
               <Outlet />
+              <Toaster />
             </SiteLayout>
           </KeyboardShortcutsProvider>
         </ZeroProvider>
