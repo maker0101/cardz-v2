@@ -4,14 +4,16 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
+    "build": "vite build",
     "dev": "tsx scripts/dev.ts",
     "dev:db": "tsx scripts/dev-db.ts",
     "dev:zero": "npx zero-cache-dev",
     "dev:ui": "tsx scripts/dev-ui.ts",
     "dev:clean": "tsx scripts/clean.ts",
-    "seed": "tsx scripts/seed.ts",
-    "generate-zero-schema": "drizzle-zero generate --format -o zero/schema.gen.ts",
-    "build": "vite build"
+    "db:seed": "tsx scripts/seed.ts",
+    "db:generate-zero-schema": "drizzle-zero generate --format -o zero/schema.gen.ts",
+    "db:migrate": "drizzle-kit generate",
+    "db:push": "drizzle-kit push"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.2.3",

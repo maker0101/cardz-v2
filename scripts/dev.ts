@@ -15,7 +15,7 @@ concurrently([
   },
   {command: 'npm run dev:ui', name: 'ts', prefixColor: '#7ce645'},
   {
-    command: `wait-on tcp:${devPgAddress} && sleep 1 && npx drizzle-kit push --force && npm run seed`,
+    command: `wait-on tcp:${devPgAddress} && sleep 1 && npx drizzle-kit push --force && npm run db:seed`,
     name: 'sd',
     prefixColor: '#ff5515',
   },
@@ -26,7 +26,7 @@ concurrently([
   },
   {
     command:
-      "chokidar 'backend/db/schema.ts' -c 'npm run generate-zero-schema'",
+      "chokidar 'backend/db/schema.ts' -c 'npm run db:generate-zero-schema'",
     name: 'gz',
     prefixColor: '#11ffcc',
   },
