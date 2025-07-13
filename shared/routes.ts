@@ -1,7 +1,7 @@
 export const PAGE_ROUTES = {
   Home: '/',
   Study: '/study',
-  Library: '/library',
+  Cards: '/cards',
   Progress: '/progress',
   Settings: '/settings',
 } as const;
