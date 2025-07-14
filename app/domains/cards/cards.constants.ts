@@ -1,0 +1,1 @@
+export const CARD_STATUSES = ['new', 'due', 'done', 'later'] as const;
