@@ -43,5 +43,40 @@ export const permissions = definePermissions<{}, Schema>(schema, () => {
         select: [allowIfCartOwner],
       },
     },
+    card: {
+      row: {
+        select: ANYONE_CAN,
+      },
+    },
+    cardStudyState: {
+      row: {
+        select: ANYONE_CAN,
+      },
+    },
+    label: {
+      row: {
+        select: ANYONE_CAN,
+      },
+    },
+    cardLabel: {
+      row: {
+        select: ANYONE_CAN,
+      },
+    },
+    onDemandStudy: {
+      row: {
+        select: ANYONE_CAN,
+      },
+    },
+    setting: {
+      row: {
+        select: ANYONE_CAN,
+      },
+    },
+    ui: {
+      row: {
+        select: ANYONE_CAN,
+      },
+    },
   } satisfies PermissionsConfig<AuthData, Schema>;
 });

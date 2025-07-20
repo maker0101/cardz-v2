@@ -53,7 +53,7 @@ export const insertCard = async (
       createdAt: now,
       updatedAt: now,
       question: card.question,
-      answer: JSON.stringify(card.answer),
+      answer: card.answer,
       userId: user.id,
       labels: card.labels,
     };
@@ -140,7 +140,7 @@ const updateOneCard = async (
     tx.card.update({
       id: cardId,
       ...rest,
-      answer: JSON.stringify(changeSet.answer ?? currentCard.answer),
+      answer: changeSet.answer ?? currentCard.answer,
       createdAt: currentCard.createdAt.getTime(),
       updatedAt: now,
     });

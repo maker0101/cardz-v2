@@ -20,6 +20,7 @@ import {Input} from '@/frontend/ui/input';
 import {getLabelsByIds} from '@/domains/labels/labels.utils';
 import {insertLabels as insertLabels} from '@/domains/labels/labels.db';
 import {removeCards, upsertCard as upsertCard} from '@/domains/cards/cards.db';
+import {Textarea} from '@/frontend/ui/textarea';
 
 export const CardDialog: React.FC<
   CardDialogProps & {onClose: () => void}
@@ -70,18 +71,12 @@ export const CardDialog: React.FC<
                 defaultValue={card?.question ?? undefined}
                 {...register('question')}
               />
-              <Controller
-                name="answer"
-                control={control}
-                render={({field}) => (
-                  <div>
-                    {/* <PlateEditor
-                      value={field.value ?? undefined}
-                      placeholder="Answer..."
-                      onChange={field.onChange}
-                    /> */}
-                  </div>
-                )}
+              <Textarea
+                id="answer"
+                placeholder="Answer..."
+                className="font-heading border-none bg-transparent px-0 text-xl font-bold focus-visible:shadow-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                defaultValue={card?.answer ?? undefined}
+                {...register('answer')}
               />
             </div>
             <Combobox

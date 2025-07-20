@@ -58,7 +58,7 @@ export const toCardFromCardDB = (
     createdAt: new Date(createdAt), // Note: needed until zero supports dates
     updatedAt: new Date(updatedAt), // Note: needed until zero supports dates
     labels: matchedCardLabels,
-    answer: JSON.parse(answer),
+    answer: answer,
     studyState,
   };
 };
