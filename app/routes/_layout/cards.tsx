@@ -96,6 +96,7 @@ function CardsPage() {
   const openCardDialog = (cardId?: string) => {
     openDialog('CardDialog', {
       props: {
+        z: zero,
         card: cardId ? (cards.find(card => card.id === cardId) ?? null) : null,
       },
       ...(cardId && {

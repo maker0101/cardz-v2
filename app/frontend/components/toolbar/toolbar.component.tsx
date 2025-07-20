@@ -41,6 +41,7 @@ export const Toolbar = (props: ToolbarProps) => {
   const openCommandDialog = () => {
     openDialog('CommandDialog', {
       props: {
+        z,
         onClose: () => {
           setIsOpen(false);
           setSelectedCardIds([]);

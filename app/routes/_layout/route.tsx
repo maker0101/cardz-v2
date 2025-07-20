@@ -1,4 +1,4 @@
-import {createFileRoute, Outlet} from '@tanstack/react-router';
+import {createFileRoute, Outlet, useRouter} from '@tanstack/react-router';
 import {SessionProvider} from '@/frontend/providers/session-provider';
 import {ZeroProvider} from '@/frontend/providers/zero-provider';
 import {createServerFn} from '@tanstack/react-start';
@@ -7,6 +7,7 @@ import {KeyboardShortcutsProvider} from '@/frontend/providers/keyboard-shortcuts
 import {Toaster} from '@/frontend/ui/sonner';
 import {AppLayout} from '@/frontend/layouts/app-layout';
 import {ThemeProvider} from '@/frontend/providers/theme-provider';
+import DialogManager from '@/frontend/components/dialogs/dialogs-manager.component';
 
 export const getAuthFromHeaders = createServerFn().handler(async () => {});
 
@@ -16,11 +17,12 @@ export const Route = createFileRoute('/_layout')({
 });
 
 function RouteComponent() {
+  const {zero} = useRouter().options.context;
   return (
     <CookiesProvider>
       <SessionProvider>
         <ZeroProvider>
-          <KeyboardShortcutsProvider>
+          <KeyboardShortcutsProvider z={zero}>
             <ThemeProvider
               attribute="class"
               defaultTheme="dark"
@@ -30,6 +32,7 @@ function RouteComponent() {
               <AppLayout>
                 <Outlet />
                 <Toaster />
+                <DialogManager />
               </AppLayout>
             </ThemeProvider>
           </KeyboardShortcutsProvider>
