@@ -7,7 +7,7 @@ import {KeyboardShortcutsProvider} from '@/frontend/providers/keyboard-shortcuts
 import {Toaster} from '@/frontend/ui/sonner';
 import {AppLayout} from '@/frontend/layouts/app-layout';
 import {ThemeProvider} from '@/frontend/providers/theme-provider';
-import DialogManager from '@/frontend/components/dialogs/dialogs-manager.component';
+import {DialogsProvider} from '@/frontend/providers/dialogs-provider';
 
 export const getAuthFromHeaders = createServerFn().handler(async () => {});
 
@@ -32,7 +32,7 @@ function RouteComponent() {
               <AppLayout>
                 <Outlet />
                 <Toaster />
-                <DialogManager />
+                <DialogsProvider />
               </AppLayout>
             </ThemeProvider>
           </KeyboardShortcutsProvider>

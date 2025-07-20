@@ -8,7 +8,7 @@ import {
   SettingsIcon,
 } from 'lucide-react';
 import {useNavigate} from '@tanstack/react-router';
-import {useDialog} from '@/frontend/components/dialogs/dialogs.hooks';
+import {useDialog} from '@/frontend/hooks/use-dialog';
 import {
   useActiveCard,
   useCards,

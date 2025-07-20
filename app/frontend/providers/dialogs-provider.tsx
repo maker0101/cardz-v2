@@ -1,11 +1,9 @@
-'use client';
-
 import {useMemo} from 'react';
 import {
   DialogName,
   DialogPropsMap,
 } from '@/frontend/components/dialogs/dialogs.types';
-import {useDialog} from '@/frontend/components/dialogs/dialogs.hooks';
+import {useDialog} from '@/frontend/hooks/use-dialog';
 import {CardDialog} from '@/frontend/components/dialogs/card-dialog/card-dialog.component';
 import {CommandDialog} from '@/frontend/components/dialogs/command-dialog/command-dialog.component';
 import {CardGenerationDialog} from '@/frontend/components/dialogs/card-generation-dialog/card-generation-dialog.component';
@@ -74,7 +72,7 @@ const createDialogComponent = (
   }
 };
 
-const DialogManager = () => {
+export const DialogsProvider = () => {
   const {dialog, closeDialog} = useDialog();
 
   const dialogComponent = useMemo(() => {
@@ -84,5 +82,3 @@ const DialogManager = () => {
 
   return dialogComponent;
 };
-
-export default DialogManager;
