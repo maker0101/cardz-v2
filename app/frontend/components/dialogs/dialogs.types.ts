@@ -7,8 +7,8 @@ import {Label} from '@/domains/labels/labels.types';
 import {DatabaseType} from 'zero/zero.types';
 
 export type DialogName =
-  | 'CardDialog'
   | 'CommandDialog'
+  | 'CardDialog'
   | 'CardGenerationDialog'
   | 'LabelsDialog'
   | 'RemoveLabelDialog'

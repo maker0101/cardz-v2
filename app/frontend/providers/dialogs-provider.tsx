@@ -9,8 +9,8 @@ import {CommandDialog} from '@/frontend/components/dialogs/command-dialog/comman
 import {CardGenerationDialog} from '@/frontend/components/dialogs/card-generation-dialog/card-generation-dialog.component';
 import {LabelsDialog} from '@/frontend/components/dialogs/labels-dialog/labels-dialog.component';
 import {RemoveLabelDialog} from '@/frontend/components/dialogs/remove-label-dialog/remove-label-dialog.component';
-import {CreateLabelDialog} from '@/frontend/components/dialogs/create-label-dialog.component';
-import {EditLabelDialog} from '@/frontend/components/dialogs/edit-label-dialog.component';
+import {CreateLabelDialog} from '@/frontend/components/dialogs/create-label-dialog/create-label-dialog.component';
+import {EditLabelDialog} from '@/frontend/components/dialogs/edit-label-dialog/edit-label-dialog.component';
 
 const createDialogComponent = (
   name: DialogName,
