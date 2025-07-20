@@ -18,15 +18,15 @@ import {useLabels} from '@/domains/labels/labels.hooks';
 // import {PlateEditor} from '@/frontend/components/editor/plate-editor';
 import {Input} from '@/frontend/ui/input';
 import {getLabelsByIds} from '@/domains/labels/labels.utils';
-import {insert as insertLabel} from '@/domains/labels/labels.db';
-import {deleteCards, upsert as upsertCard} from '@/domains/cards/cards.db';
+import {insertLabels as insertLabels} from '@/domains/labels/labels.db';
+import {removeCards, upsertCard as upsertCard} from '@/domains/cards/cards.db';
 
 export const CardDialog: React.FC<
   CardDialogProps & {onClose: () => void}
 > = props => {
-  const {card, onClose, z} = props;
+  const {card, onClose, db} = props;
 
-  const {labels} = useLabels(z);
+  const {labels} = useLabels(db);
 
   const {register, handleSubmit, setValue, control} = useForm<CardFormValues>({
     defaultValues: {
@@ -37,17 +37,17 @@ export const CardDialog: React.FC<
   });
 
   const onInsertLabel = async (labelName: string) => {
-    const newLabels = await insertLabel(z, {name: labelName});
+    const newLabels = await insertLabels(db, {name: labelName});
     if (newLabels.length > 0) return newLabels[0].id;
   };
 
   const onCardDelete = () => {
-    if (card?.id) deleteCards(z, [card.id]);
+    if (card?.id) removeCards(db, [card.id]);
     onClose();
   };
 
   const onFormSubmit = async (cardData: CardFormValues) => {
-    await upsertCard(z, cardData, card?.id);
+    await upsertCard(db, cardData, card?.id);
     onClose();
   };
 
@@ -96,7 +96,7 @@ export const CardDialog: React.FC<
               // TODO: Allow multiple labels
               defaultValue={card?.labels.map(label => label.id)}
               onSelect={async labelIds => {
-                const labels = await getLabelsByIds(z, labelIds);
+                const labels = await getLabelsByIds(db, labelIds);
                 setValue('labels', labels);
               }}
               onCreate={onInsertLabel}

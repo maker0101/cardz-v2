@@ -1,21 +1,21 @@
 import {UiConfigType} from '@/domains/ui/ui.types';
 import {nanoid} from 'nanoid';
-import {ZeroType} from 'zero/zero.types';
+import {DatabaseType} from 'zero/zero.types';
 import * as uiQueries from '@/domains/ui/ui.queries';
 
-export const getOne = async (z: ZeroType, userId: string) => {
-  return uiQueries.getOne(z, userId);
+export const getOneUi = async (db: DatabaseType, userId: string) => {
+  return uiQueries.getOne(db, userId);
 };
 
-export const insertOne = async (
-  z: ZeroType,
+export const insertOneUi = async (
+  db: DatabaseType,
   userId: string,
   config: UiConfigType,
 ) => {
   const uiId = nanoid();
   const now = Date.now();
 
-  return z.mutate.ui.insert({
+  return db.mutate.ui.insert({
     id: uiId,
     userId,
     studyMode: config.mode ?? 'due',
@@ -24,19 +24,19 @@ export const insertOne = async (
   });
 };
 
-export const updateOne = async (
-  z: ZeroType,
+export const updateOneUi = async (
+  db: DatabaseType,
   userId: string,
   config: UiConfigType,
 ) => {
-  const ui = await getOne(z, userId);
+  const ui = await getOneUi(db, userId);
 
   if (!ui) {
     throw new Error('UI not found');
   }
 
   const now = Date.now();
-  return z.mutate.ui.update({
+  return db.mutate.ui.update({
     id: ui.id,
     userId,
     studyMode: config.mode ?? 'due',
@@ -44,15 +44,15 @@ export const updateOne = async (
   });
 };
 
-export const upsertOne = async (
-  z: ZeroType,
+export const upsertOneUi = async (
+  db: DatabaseType,
   userId: string,
   config: UiConfigType,
 ) => {
-  const ui = await getOne(z, userId);
+  const ui = await getOneUi(db, userId);
 
   if (!ui) {
-    return insertOne(z, userId, config);
+    return insertOneUi(db, userId, config);
   }
-  return updateOne(z, userId, config);
+  return updateOneUi(db, userId, config);
 };

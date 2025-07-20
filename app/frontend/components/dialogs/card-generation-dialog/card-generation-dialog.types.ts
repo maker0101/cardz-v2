@@ -1,7 +1,7 @@
-import {ZeroType} from 'zero/zero.types';
+import {DatabaseType} from 'zero/zero.types';
 
 export type CardGenerationDialogProps = {
-  z: ZeroType;
+  db: DatabaseType;
   onClose: () => void;
   initialPrompt: string;
 };

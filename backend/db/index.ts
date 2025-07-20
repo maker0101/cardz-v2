@@ -4,4 +4,4 @@ import 'shared/env';
 
 const pgURL = must(process.env.PG_URL, 'PG_URL is required');
 
-export const db = drizzle(pgURL);
+export const drizzleDb = drizzle(pgURL);

@@ -1,5 +1,3 @@
-'use client';
-
 import React, {useState} from 'react';
 import {DialogTitle, DialogDescription} from '@/frontend/ui/dialog';
 import {
@@ -12,18 +10,18 @@ import {
 } from '@/frontend/ui/command';
 import {useLabels} from '@/domains/labels/labels.hooks';
 import {useCards} from '@/domains/cards/cards.hooks';
-import {update as updateCard} from '@/domains/cards/cards.db';
+import {updateCard as updateCard} from '@/domains/cards/cards.db';
 import {RemoveLabelDialogProps} from '@/frontend/components/dialogs/remove-label-dialog/remove-label-dialog.types';
 import {toast} from 'sonner';
 
 export const RemoveLabelDialog: React.FC<RemoveLabelDialogProps> = ({
-  z,
+  db,
   cardIds,
   onClose,
 }) => {
   const [inputValue, setInputValue] = useState('');
-  const {labels} = useLabels(z);
-  const {cards} = useCards(z);
+  const {labels} = useLabels(db);
+  const {cards} = useCards(db);
 
   const selectedCards = cards.filter(card => cardIds.includes(card.id));
 
@@ -53,7 +51,7 @@ export const RemoveLabelDialog: React.FC<RemoveLabelDialogProps> = ({
         }));
 
       if (updates.length > 0) {
-        await updateCard(z, updates);
+        await updateCard(db, updates);
       }
     } catch (error) {
       toast.error('Failed to remove label.');

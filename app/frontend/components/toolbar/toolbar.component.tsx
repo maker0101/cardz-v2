@@ -7,20 +7,20 @@ import {queueCards} from '@/domains/studies/studies.db';
 import {useStudyMode} from '@/domains/studies/studies.hooks';
 import {useToolbar} from '@/frontend/hooks/use-toolbar';
 import {useDialog} from '@/frontend/hooks/use-dialog';
-import {ZeroType} from 'zero/zero.types';
+import {DatabaseType} from 'zero/zero.types';
 
 interface ToolbarProps {
-  z: ZeroType;
+  db: DatabaseType;
   isOpen: boolean;
   onOpen: () => void;
   onClose: () => void;
 }
 
 export const Toolbar = (props: ToolbarProps) => {
-  const {z, isOpen} = props;
+  const {db, isOpen} = props;
   const navigate = useNavigate();
   const {selectedCardIds, setSelectedCardIds} = useSelectedCards();
-  const {setMode} = useStudyMode(z);
+  const {setMode} = useStudyMode(db);
   const {openDialog} = useDialog();
 
   const {setIsOpen} = useToolbar();
@@ -31,7 +31,7 @@ export const Toolbar = (props: ToolbarProps) => {
   };
 
   const studyNow = async () => {
-    await queueCards(z, selectedCardIds);
+    await queueCards(db, selectedCardIds);
     await setMode('onDemand');
     setIsOpen(false);
     setSelectedCardIds([]);
@@ -41,7 +41,7 @@ export const Toolbar = (props: ToolbarProps) => {
   const openCommandDialog = () => {
     openDialog('CommandDialog', {
       props: {
-        z,
+        db,
         onClose: () => {
           setIsOpen(false);
           setSelectedCardIds([]);

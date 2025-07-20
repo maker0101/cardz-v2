@@ -1,10 +1,10 @@
-import {Zero} from '@rocicorp/zero';
 import {ZeroProvider as ZeroProviderRocicorp} from '@rocicorp/zero/react';
-import {schema, Schema} from 'zero/schema';
+import {schema} from 'zero/schema';
 import {useMemo} from 'react';
-import {createMutators, Mutators} from 'zero/mutators';
+import {createMutators} from 'zero/mutators';
 import {useRouter} from '@tanstack/react-router';
 import {must} from 'shared/must';
+import {DatabaseType} from 'zero/zero.types';
 
 const serverURL = must(
   import.meta.env.VITE_PUBLIC_SERVER,
@@ -24,17 +24,17 @@ export function ZeroProvider({children}: {children: React.ReactNode}) {
       mutators: createMutators(
         session.data?.userID ? {sub: session.data.userID} : undefined,
       ),
-      init: (zero: Zero<Schema, Mutators>) => {
+      init: (db: DatabaseType) => {
         router.update({
           context: {
             ...router.options.context,
-            zero,
+            db,
           },
         });
 
         router.invalidate();
 
-        preload(zero);
+        preload(db);
       },
     };
   }, [session.data?.userID, router]);
@@ -42,7 +42,7 @@ export function ZeroProvider({children}: {children: React.ReactNode}) {
   return <ZeroProviderRocicorp {...opts}>{children}</ZeroProviderRocicorp>;
 }
 
-function preload(z: Zero<Schema>) {
+function preload(db: DatabaseType) {
   // Delay preload() slightly to avoid blocking UI on first run. We don't need
   // this data to display the UI, it's used by search.
   setTimeout(() => {
@@ -69,7 +69,7 @@ function preload(z: Zero<Schema>) {
     // avoid having the UI jostle. So we want to preload in the same order we
     // tend to display in the UI. That way local results are always also the
     // top ranked results.
-    z.query.artist.orderBy('popularity', 'desc').limit(1_000).preload({
+    db.query.artist.orderBy('popularity', 'desc').limit(1_000).preload({
       ttl: '1m',
     });
   }, 1_000);

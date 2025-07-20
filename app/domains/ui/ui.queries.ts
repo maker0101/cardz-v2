@@ -1,5 +1,5 @@
-import {ZeroType} from 'zero/zero.types';
+import {DatabaseType} from 'zero/zero.types';
 
-export const getOne = (z: ZeroType, userId: string) => {
-  return z.query.ui.where('userId', '=', userId).one();
+export const getOne = (db: DatabaseType, userId: string) => {
+  return db.query.ui.where('userId', '=', userId).one();
 };

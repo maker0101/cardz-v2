@@ -31,13 +31,13 @@ import {
   buildCardGenerationPrompt,
 } from '@/domains/cards/cards.utils';
 import {CardGenerationDialogProps} from '@/frontend/components/dialogs/card-generation-dialog/card-generation-dialog.types';
-import {insert as insertCards} from '@/domains/cards/cards.db';
+import {insertCard as insertCards} from '@/domains/cards/cards.db';
 
 export const CardGenerationDialog = (props: CardGenerationDialogProps) => {
-  const {z, onClose, initialPrompt} = props;
+  const {db, onClose, initialPrompt} = props;
   const [message, setMessage] = useState(initialPrompt);
-  const {cards, isLoading: isLoadingCards} = useCards(z);
-  const {labels, isLoading: isLoadingLabels} = useLabels(z);
+  const {cards, isLoading: isLoadingCards} = useCards(db);
+  const {labels, isLoading: isLoadingLabels} = useLabels(db);
 
   const {
     object: generatedCards,
@@ -99,7 +99,7 @@ export const CardGenerationDialog = (props: CardGenerationDialogProps) => {
           .filter((label): label is Label => label !== undefined),
       }));
 
-      await insertCards(z, cardsToInsert);
+      await insertCards(db, cardsToInsert);
 
       deselectAll();
       onClose();

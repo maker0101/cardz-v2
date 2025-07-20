@@ -3,24 +3,24 @@ import {user} from 'shared/user';
 import {useDueCards, useOnDemandCards} from '@/domains/cards/cards.hooks';
 import * as queries from '@/domains/studies/studies.queries';
 import {useGetUi} from '@/domains/ui/ui.hooks';
-import {upsertOne} from '@/domains/ui/ui.db';
+import {upsertOneUi} from '@/domains/ui/ui.db';
 import {StudyMode} from '@/domains/studies/studies.types';
-import {ZeroType} from 'zero/zero.types';
+import {DatabaseType} from 'zero/zero.types';
 
-export const useStudyCards = (z: ZeroType) => {
-  const {mode} = useStudyMode(z);
+export const useStudyCards = (db: DatabaseType) => {
+  const {mode} = useStudyMode(db);
 
   const {
     queue: cardsDue,
     history: dueHistory,
     isLoading: isLoadingDueCards,
-  } = useDueCards(z);
+  } = useDueCards(db);
 
   const {
     queue: onDemandCards,
     history: onDemandHistory,
     isLoading: isLoadingOnDemandCards,
-  } = useOnDemandCards(z);
+  } = useOnDemandCards(db);
 
   return {
     cards: {
@@ -39,20 +39,20 @@ export const useStudyCards = (z: ZeroType) => {
   };
 };
 
-export const useGetOnDemandStudy = (z: ZeroType) => {
-  const studyQuery = queries.getOnDemandStudy(z, user.id);
+export const useGetOnDemandStudy = (db: DatabaseType) => {
+  const studyQuery = queries.getOnDemandStudy(db, user.id);
   const [study, details] = useQuery(studyQuery);
 
   return {study, isLoading: details.type !== 'complete'};
 };
 
-export const useStudyMode = (z: ZeroType) => {
-  const {ui, isLoading} = useGetUi(z);
+export const useStudyMode = (db: DatabaseType) => {
+  const {ui, isLoading} = useGetUi(db);
 
   return {
     mode: ui?.studyMode,
     setMode: async (mode: StudyMode) => {
-      await upsertOne(z, user.id, {mode});
+      await upsertOneUi(db, user.id, {mode});
     },
     isLoading,
   };

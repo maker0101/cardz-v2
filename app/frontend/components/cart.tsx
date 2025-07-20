@@ -3,7 +3,7 @@ import {useRouter} from '@tanstack/react-router';
 import {Link} from 'app/frontend/ui/link';
 
 export function Cart() {
-  const {zero, session} = useRouter().options.context;
+  const {db: zero, session} = useRouter().options.context;
 
   const [items] = useQuery(
     zero.query.cartItem

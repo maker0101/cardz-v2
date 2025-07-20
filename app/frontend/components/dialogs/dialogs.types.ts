@@ -4,7 +4,7 @@ import {CardGenerationDialogProps} from '@/frontend/components/dialogs/card-gene
 import {LabelsDialogProps} from '@/frontend/components/dialogs/labels-dialog/labels-dialog.types';
 import {RemoveLabelDialogProps} from '@/frontend/components/dialogs/remove-label-dialog/remove-label-dialog.types';
 import {Label} from '@/domains/labels/labels.types';
-import {ZeroType} from 'zero/zero.types';
+import {DatabaseType} from 'zero/zero.types';
 
 export type DialogName =
   | 'CardDialog'
@@ -16,12 +16,12 @@ export type DialogName =
   | 'EditLabelDialog';
 
 export type CreateLabelDialogProps = {
-  z: ZeroType;
+  db: DatabaseType;
   onClose: () => void;
 };
 
 export type EditLabelDialogProps = {
-  z: ZeroType;
+  db: DatabaseType;
   label: Label;
   onClose: () => void;
 };

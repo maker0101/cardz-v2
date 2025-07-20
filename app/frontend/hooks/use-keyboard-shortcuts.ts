@@ -1,12 +1,10 @@
-'use client';
-
 import {useHotkeys} from 'react-hotkeys-hook';
 import {useNavigate} from '@tanstack/react-router';
 import {DialogState} from '@/frontend/components/dialogs/dialogs.types';
 import {useDialog} from '@/frontend/hooks/use-dialog';
 import {useEffect, useMemo} from 'react';
 import {useHotkeysContext} from 'react-hotkeys-hook';
-import {ZeroType} from 'zero/zero.types';
+import {DatabaseType} from 'zero/zero.types';
 
 export const HOTKEY_SCOPES = {
   GLOBAL: 'global',
@@ -86,7 +84,7 @@ export const useKeyboardShortcut = (shortcutDef: KeyboardShortcutDef) => {
 };
 
 export const createShortcuts = (
-  z: ZeroType,
+  db: DatabaseType,
   navigate: ReturnType<typeof useNavigate>,
   dialogApi: DialogState,
 ) => ({
@@ -101,7 +99,7 @@ export const createShortcuts = (
       } else {
         dialogApi.openDialog('CommandDialog', {
           props: {
-            z,
+            db,
             onClose: dialogApi.closeDialog,
           },
         });
@@ -116,7 +114,7 @@ export const createShortcuts = (
     action: () => {
       dialogApi.openDialog('CardDialog', {
         props: {
-          z,
+          db,
           card: null,
         },
       });
@@ -160,11 +158,11 @@ export const createShortcuts = (
   },
 });
 
-export const useKeyboardShortcuts = (z: ZeroType) => {
+export const useKeyboardShortcuts = (db: DatabaseType) => {
   const navigate = useNavigate();
   const dialogApi = useDialog();
 
-  const shortcuts = createShortcuts(z, navigate, dialogApi);
+  const shortcuts = createShortcuts(db, navigate, dialogApi);
 
   useKeyboardShortcut(shortcuts.COMMAND_MENU);
   useKeyboardShortcut(shortcuts.CREATE_NEW_CARD);

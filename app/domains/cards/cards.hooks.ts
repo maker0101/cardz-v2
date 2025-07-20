@@ -14,7 +14,7 @@ import {useGetOnDemandStudy} from '@/domains/studies/studies.hooks';
 import {useState, useEffect} from 'react';
 import {useToolbar} from '@/frontend/hooks/use-toolbar';
 import {useHotkeys} from 'react-hotkeys-hook';
-import {ZeroType} from 'zero/zero.types';
+import {DatabaseType} from 'zero/zero.types';
 import * as cardQueries from '@/domains/cards/cards.queries';
 
 /* -------------------------------
@@ -36,12 +36,12 @@ export const useSelectedCards = create<SelectedCardsState>(set => ({
  * ------------------------------- */
 
 const useGetCardsDB = (
-  z: ZeroType,
+  db: DatabaseType,
 ): {
   cardsDB: readonly CardDB[];
   isLoading: boolean;
 } => {
-  const query = cardQueries.getAll(z, user.id);
+  const query = cardQueries.getAllCards(db, user.id);
 
   const [cardsDB, details] = useQuery(query);
 
@@ -49,13 +49,13 @@ const useGetCardsDB = (
 };
 
 export const useCards = (
-  z: ZeroType,
+  db: DatabaseType,
 ): {
   cards: Card[];
   isLoading: boolean;
 } => {
-  const {cardsDB, isLoading: isLoadingCardsDB} = useGetCardsDB(z);
-  const {labels, isLoading: isLoadingLabels} = useLabels(z);
+  const {cardsDB, isLoading: isLoadingCardsDB} = useGetCardsDB(db);
+  const {labels, isLoading: isLoadingLabels} = useLabels(db);
 
   return {
     cards: cardsDB.map(card => toCardFromCardDB(card, labels)),
@@ -64,13 +64,13 @@ export const useCards = (
 };
 
 export const useDueCards = (
-  z: ZeroType,
+  db: DatabaseType,
 ): {
   queue: Card[];
   history: Card[];
   isLoading: boolean;
 } => {
-  const {cards, isLoading} = useCards(z);
+  const {cards, isLoading} = useCards(db);
 
   const cardsDue = filterCards(cards, {status: ['due']});
   const cardsStudiedToday = filterCards(cards, {
@@ -85,14 +85,14 @@ export const useDueCards = (
 };
 
 export const useOnDemandCards = (
-  z: ZeroType,
+  db: DatabaseType,
 ): {
   queue: Card[];
   history: Card[];
   isLoading: boolean;
 } => {
-  const {cards, isLoading: isLoadingCards} = useCards(z);
-  const {study, isLoading: isLoadingStudy} = useGetOnDemandStudy(z);
+  const {cards, isLoading: isLoadingCards} = useCards(db);
+  const {study, isLoading: isLoadingStudy} = useGetOnDemandStudy(db);
 
   if (!study) {
     return {

@@ -6,7 +6,6 @@ import {
   useKeyboardShortcut,
   useHotkeyScope,
 } from '@/frontend/hooks/use-keyboard-shortcuts';
-
 import {
   useActiveCard,
   useSelectedCards,
@@ -34,7 +33,7 @@ import {
 import {capitalize} from '@/lib/utils';
 import {sortLabelsByName} from '@/domains/labels/labels.utils';
 import {cn} from '@/lib/utils';
-import {ZeroType} from 'zero/zero.types';
+import {DatabaseType} from 'zero/zero.types';
 import {Checkbox} from '@/frontend/ui/checkbox';
 import {nextStudyMessage} from '@/domains/studies/studies.core';
 import {Badge} from '@/frontend/ui/badge';
@@ -45,13 +44,13 @@ export const Route = createFileRoute('/_layout/cards')({
 });
 
 function CardsPage() {
-  const {zero} = useRouter().options.context;
+  const {db} = useRouter().options.context;
   const setActiveCardId = useActiveCard(state => state.setActiveCardId);
   const {isOpen, setIsOpen} = useToolbar();
   const {selectedCardIds, setSelectedCardIds} = useSelectedCards();
 
-  const {cards, isLoading: isLoadingCards} = useCards(zero);
-  const {labels, isLoading: isLoadingLabels} = useLabels(zero);
+  const {cards, isLoading: isLoadingCards} = useCards(db);
+  const {labels, isLoading: isLoadingLabels} = useLabels(db);
 
   const statusFilters = useCardFiltersStore(state => state.status);
   const labelFilters = useCardFiltersStore(state => state.labels);
@@ -96,7 +95,7 @@ function CardsPage() {
   const openCardDialog = (cardId?: string) => {
     openDialog('CardDialog', {
       props: {
-        z: zero,
+        db,
         card: cardId ? (cards.find(card => card.id === cardId) ?? null) : null,
       },
       ...(cardId && {
@@ -118,7 +117,7 @@ function CardsPage() {
       }
     >
       <LibraryContent
-        z={zero}
+        db={db}
         isLoading={isLoadingCards || isLoadingLabels}
         cards={cards}
         filteredCards={filteredCards}
@@ -133,7 +132,7 @@ function CardsPage() {
 }
 
 interface LibraryContentProps {
-  z: ZeroType;
+  db: DatabaseType;
   isLoading: boolean;
   cards: Card[];
   filteredCards: Card[];
@@ -151,7 +150,7 @@ interface LibraryContentProps {
 
 const LibraryContent: React.FC<LibraryContentProps> = props => {
   const {
-    z,
+    db,
     isLoading,
     cards,
     filteredCards,
@@ -214,7 +213,7 @@ const LibraryContent: React.FC<LibraryContentProps> = props => {
       </Table>
 
       <Toolbar
-        z={z}
+        db={db}
         isOpen={isOpen}
         onOpen={() => {}}
         onClose={() => setIsOpen(false)}

@@ -1,26 +1,26 @@
+import {nanoid} from 'nanoid';
 import {user} from 'shared/user';
-import {get as getCard, update as updateCard} from '@/domains/cards/cards.db';
+import {getOneCard, updateCard as updateCard} from '@/domains/cards/cards.db';
 import {newStudyState} from '@/domains/studies/studies.core';
 import {AlgorithmId} from '@/domains/algorithms/algorithms.types';
-import {getOne as getOneUi} from '@/domains/ui/ui.db';
-import {nanoid} from 'nanoid';
-import {ZeroType} from 'zero/zero.types';
+import {getOneUi as getOneUi} from '@/domains/ui/ui.db';
+import {DatabaseType} from 'zero/zero.types';
 import {
   OnDemandStudyMode,
   OnDemandStudyWithCards,
 } from '@/domains/studies/studies.types';
 import {computeQueueAndHistory} from '@/domains/studies/studies.utils';
-import * as studyQueries from '@/domains/studies/studies.queries';
+import {getOnDemandStudy as getOnDemandStudyQuery} from '@/domains/studies/studies.queries';
 
 export const getOnDemandStudy = async (
-  z: ZeroType,
+  db: DatabaseType,
 ): Promise<OnDemandStudyWithCards | undefined> => {
-  const study = await studyQueries.getOnDemandStudy(z, user.id);
+  const study = await getOnDemandStudyQuery(db, user.id);
   return study || undefined;
 };
 
 export const insertOnDemandStudy = async (
-  z: ZeroType,
+  db: DatabaseType,
 ): Promise<OnDemandStudyWithCards> => {
   const studyId = nanoid();
   const now = Date.now();
@@ -32,7 +32,7 @@ export const insertOnDemandStudy = async (
     updatedAt: now,
   };
 
-  await z.mutate.onDemandStudy.insert(newStudy);
+  await db.mutate.onDemandStudy.insert(newStudy);
 
   return {
     ...newStudy,
@@ -41,11 +41,11 @@ export const insertOnDemandStudy = async (
 };
 
 export const queueCards = async (
-  z: ZeroType,
+  db: DatabaseType,
   cardIds: string[],
   mode: OnDemandStudyMode = 'create',
 ): Promise<OnDemandStudyWithCards> => {
-  const study = await fetchOrCreateStudy(z);
+  const study = await fetchOrCreateStudy(db);
 
   const {newQueueIds, newHistoryIds} = computeQueueAndHistory(
     study.onDemandStudyCards,
@@ -53,9 +53,9 @@ export const queueCards = async (
     mode,
   );
 
-  await replaceOnDemandStudyCards(z, study, newQueueIds, newHistoryIds);
+  await replaceOnDemandStudyCards(db, study, newQueueIds, newHistoryIds);
 
-  await z.mutate.onDemandStudy.update({
+  await db.mutate.onDemandStudy.update({
     id: study.id,
     updatedAt: Date.now(),
   });
@@ -65,22 +65,22 @@ export const queueCards = async (
 
 // Helper functions
 const fetchOrCreateStudy = async (
-  z: ZeroType,
+  db: DatabaseType,
 ): Promise<OnDemandStudyWithCards> => {
-  let study = await getOnDemandStudy(z);
+  let study = await getOnDemandStudy(db);
   if (!study) {
-    study = await insertOnDemandStudy(z);
+    study = await insertOnDemandStudy(db);
   }
   return study;
 };
 
 const replaceOnDemandStudyCards = async (
-  z: ZeroType,
+  db: DatabaseType,
   study: OnDemandStudyWithCards,
   newQueueIds: string[],
   newHistoryIds: string[],
 ): Promise<void> => {
-  await z.mutateBatch(async tx => {
+  await db.mutateBatch(async tx => {
     // Delete existing onDemandStudyCards for this study
     for (const row of study.onDemandStudyCards) {
       tx.onDemandStudyCard.delete({
@@ -110,13 +110,13 @@ const replaceOnDemandStudyCards = async (
 };
 
 export const scoreCard = async (
-  z: ZeroType,
+  db: DatabaseType,
   cardId: string,
   score: number,
   algorithmId: AlgorithmId,
 ) => {
-  const cardResult = await getCard(z, cardId);
-  const ui = await getOneUi(z, user.id);
+  const cardResult = await getOneCard(db, cardId);
+  const ui = await getOneUi(db, user.id);
 
   if (!cardResult || Array.isArray(cardResult)) return;
 
@@ -131,24 +131,24 @@ export const scoreCard = async (
       score,
     );
 
-    await updateCard(z, cardId, {
+    await updateCard(db, cardId, {
       studyState: updatedStudyState,
       updatedAt: new Date(),
     });
   } else {
-    await updateCard(z, cardId, {
+    await updateCard(db, cardId, {
       updatedAt: new Date(),
     });
 
-    await moveCardToHistory(z, cardId);
+    await moveCardToHistory(db, cardId);
   }
 };
 
 export const moveCardToHistory = async (
-  z: ZeroType,
+  db: DatabaseType,
   cardId: string,
 ): Promise<boolean> => {
-  const study = await getOnDemandStudy(z);
+  const study = await getOnDemandStudy(db);
   if (!study) return false;
 
   const existingCard = study.onDemandStudyCards.find(
@@ -156,13 +156,13 @@ export const moveCardToHistory = async (
   );
 
   if (existingCard) {
-    await z.mutate.onDemandStudyCard.update({
+    await db.mutate.onDemandStudyCard.update({
       studyId: study.id,
       cardId: cardId,
       type: 'history',
     });
 
-    await z.mutate.onDemandStudy.update({
+    await db.mutate.onDemandStudy.update({
       id: study.id,
       updatedAt: Date.now(),
     });

@@ -1,7 +1,7 @@
-import {ZeroType} from 'zero/zero.types';
+import {DatabaseType} from 'zero/zero.types';
 
 export interface RemoveLabelDialogProps {
-  z: ZeroType;
+  db: DatabaseType;
   cardIds: string[];
   onClose: () => void;
 }

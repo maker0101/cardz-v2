@@ -17,12 +17,12 @@ export const Route = createFileRoute('/_layout')({
 });
 
 function RouteComponent() {
-  const {zero} = useRouter().options.context;
+  const {db} = useRouter().options.context;
   return (
     <CookiesProvider>
       <SessionProvider>
         <ZeroProvider>
-          <KeyboardShortcutsProvider z={zero}>
+          <KeyboardShortcutsProvider db={db}>
             <ThemeProvider
               attribute="class"
               defaultTheme="dark"

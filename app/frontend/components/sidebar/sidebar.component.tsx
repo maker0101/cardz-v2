@@ -18,13 +18,13 @@ import {useDialog} from '@/frontend/hooks/use-dialog';
 import {useRouter} from '@tanstack/react-router';
 
 export const Sidebar = () => {
-  const {session, zero} = useRouter().options.context;
+  const {session, db: zero} = useRouter().options.context;
   const {openDialog, closeDialog} = useDialog();
 
   const openCommandDialog = () => {
     openDialog('CommandDialog', {
       props: {
-        z: zero,
+        db: zero,
         onClose: closeDialog,
       },
     });

@@ -15,7 +15,7 @@ import {
   useSelectedCards,
 } from '@/domains/cards/cards.hooks';
 import {CommandGroup} from '@/frontend/components/dialogs/command-dialog/command-dialog.types';
-import {deleteCards} from '@/domains/cards/cards.db';
+import {removeCards} from '@/domains/cards/cards.db';
 import {queueCards} from '@/domains/studies/studies.db';
 import {useToolbar} from '@/frontend/hooks/use-toolbar';
 import {useStudyMode} from '@/domains/studies/studies.hooks';
@@ -23,21 +23,20 @@ import {
   getCardStatus,
   getCardStatusIconPath,
 } from '@/domains/cards/cards.utils';
-import {ZeroType} from 'zero/zero.types';
-import {PAGE_ROUTES} from 'shared/routes';
+import {DatabaseType} from 'zero/zero.types';
 
 const LIMIT_OF_SEARCH_RESULTS = 20;
 
 export const useGetCommandContent = (
-  z: ZeroType,
+  db: DatabaseType,
   searchTerm: string = '',
 ): CommandGroup[] => {
   const navigate = useNavigate();
   const {openDialog, closeDialog} = useDialog();
   const {selectedCardIds, setSelectedCardIds} = useSelectedCards();
   const {setIsOpen} = useToolbar();
-  const {setMode} = useStudyMode(z);
-  const {cards, isLoading} = useCards(z);
+  const {setMode} = useStudyMode(db);
+  const {cards, isLoading} = useCards(db);
 
   // Card
   const setActiveCardId = useActiveCard(state => state.setActiveCardId);
@@ -45,7 +44,7 @@ export const useGetCommandContent = (
   const createNewCard = (cardId?: string) => {
     openDialog('CardDialog', {
       props: {
-        z,
+        db,
         card: null,
       },
       ...(cardId && {
@@ -58,7 +57,7 @@ export const useGetCommandContent = (
   const createCardsWithAi = () => {
     openDialog('CardGenerationDialog', {
       props: {
-        z,
+        db,
         initialPrompt: '',
         onClose: closeDialog,
       },
@@ -70,7 +69,7 @@ export const useGetCommandContent = (
   const changeLabels = () => {
     openDialog('LabelsDialog', {
       props: {
-        z,
+        db,
         cardIds: selectedCardIds,
         onClose: closeDialog,
       },
@@ -80,7 +79,7 @@ export const useGetCommandContent = (
   const removeLabel = () => {
     openDialog('RemoveLabelDialog', {
       props: {
-        z,
+        db,
         cardIds: selectedCardIds,
         onClose: closeDialog,
       },
@@ -88,14 +87,14 @@ export const useGetCommandContent = (
   };
 
   const handleDeleteCards = async () => {
-    await deleteCards(z, selectedCardIds);
+    await removeCards(db, selectedCardIds);
     setSelectedCardIds([]);
     setIsOpen(false);
     closeDialog();
   };
 
   const studyNow = async () => {
-    await queueCards(z, selectedCardIds);
+    await queueCards(db, selectedCardIds);
     await setMode('onDemand');
     setIsOpen(false);
     setSelectedCardIds([]);
@@ -137,7 +136,7 @@ export const useGetCommandContent = (
 
     openDialog('CardDialog', {
       props: {
-        z,
+        db,
         card,
       },
       onOpen: () => setActiveCardId(cardId),

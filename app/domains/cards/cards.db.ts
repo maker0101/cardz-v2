@@ -1,40 +1,35 @@
 import {nanoid} from 'nanoid';
 import {Card, CardChangeSet, CardFormValues} from '@/domains/cards/cards.types';
 import {user} from 'shared/user';
-import {ZeroType} from 'zero/zero.types';
+import {DatabaseType} from 'zero/zero.types';
 import {toCardFromCardDB} from '@/domains/cards/cards.utils';
-import * as cardQueries from '@/domains/cards/cards.queries';
-import {getAll as getAllLabels} from '@/domains/labels/labels.db';
+import {
+  getOneCard as getOneCardQuery,
+  getManyCards as getManyCardsQuery,
+} from '@/domains/cards/cards.queries';
+import {getAllLabels as getAllLabels} from '@/domains/labels/labels.db';
 import {getLabelsToUpdate, getNewLabels} from '@/domains/labels/labels.utils';
 
-export const getOne = async (
-  z: ZeroType,
+export const getOneCard = async (
+  db: DatabaseType,
   cardId: string,
 ): Promise<Card | undefined> => {
-  const cardDB = await cardQueries.getOne(z, cardId);
-  const labels = await getAllLabels(z);
+  const cardDB = await getOneCardQuery(db, cardId);
+  const labels = await getAllLabels(db);
   return cardDB ? toCardFromCardDB(cardDB, labels) : undefined;
 };
 
-export const getMany = async (
-  z: ZeroType,
+export const getManyCards = async (
+  db: DatabaseType,
   cardIds: string[],
 ): Promise<Card[]> => {
-  const cardsDB = await cardQueries.getMany(z, cardIds);
-  const labels = await getAllLabels(z);
+  const cardsDB = await getManyCardsQuery(db, cardIds);
+  const labels = await getAllLabels(db);
   return cardsDB.map(card => toCardFromCardDB(card, labels));
 };
 
-export const get = async (
-  z: ZeroType,
-  cardIds: string | string[],
-): Promise<Card | Card[] | undefined> => {
-  if (typeof cardIds === 'string') return getOne(z, cardIds);
-  return getMany(z, cardIds);
-};
-
-export const insert = async (
-  z: ZeroType,
+export const insertCard = async (
+  db: DatabaseType,
   cardData: CardFormValues | CardFormValues[],
 ): Promise<Card[]> => {
   const cardsToInsert = Array.isArray(cardData) ? cardData : [cardData];
@@ -66,10 +61,10 @@ export const insert = async (
 
   // Determine which labels need to be inserted before starting the transaction
   const allLabels = newCards.flatMap(card => card.labels || []);
-  const existingLabels = await getAllLabels(z);
+  const existingLabels = await getAllLabels(db);
   const newLabels = getNewLabels(allLabels, existingLabels);
 
-  await z.mutateBatch(async tx => {
+  await db.mutateBatch(async tx => {
     for (const label of newLabels) {
       await tx.label.insert({
         id: label.id,
@@ -114,11 +109,11 @@ export const insert = async (
     }
   });
 
-  return getMany(z, cardIds);
+  return getManyCards(db, cardIds);
 };
 
-const updateOne = async (
-  z: ZeroType,
+const updateOneCard = async (
+  db: DatabaseType,
   cardId: string,
   changeSet: CardChangeSet,
   options?: {
@@ -129,7 +124,7 @@ const updateOne = async (
   const {labels, studyState, ...rest} = changeSet;
   const now = Date.now();
 
-  const cardResult = await getOne(z, cardId);
+  const cardResult = await getOneCard(db, cardId);
 
   if (!cardResult)
     throw new Error('Card could not be updated because it was not found');
@@ -176,16 +171,16 @@ const updateOne = async (
   if (options?.tx) {
     await updateFn(options.tx);
   } else {
-    await z.mutateBatch(updateFn);
+    await db.mutateBatch(updateFn);
   }
 
   if (options?.skipReturn) return undefined;
 
-  return getOne(z, cardId);
+  return getOneCard(db, cardId);
 };
 
-export const update = async (
-  z: ZeroType,
+export const updateCard = async (
+  db: DatabaseType,
   updates:
     | string
     | Array<{cardId: string; changeSet: CardChangeSet}>
@@ -198,7 +193,7 @@ export const update = async (
 ): Promise<Card | Card[] | undefined> => {
   // Handle single update case
   if (typeof updates === 'string' && changeSet) {
-    return updateOne(z, updates, changeSet, options);
+    return updateOneCard(db, updates, changeSet, options);
   }
 
   // Handle multiple updates case
@@ -206,10 +201,10 @@ export const update = async (
     ? updates
     : [updates as {cardId: string; changeSet: CardChangeSet}];
 
-  await z.mutateBatch(async tx => {
+  await db.mutateBatch(async tx => {
     for (const {cardId, changeSet} of updatesArray) {
       try {
-        await updateOne(z, cardId, changeSet, {tx, skipReturn: true});
+        await updateOneCard(db, cardId, changeSet, {tx, skipReturn: true});
       } catch (error) {
         console.error(`Failed to update card ${cardId}:`, error);
       }
@@ -219,8 +214,8 @@ export const update = async (
   return undefined;
 };
 
-export const upsert = async (
-  z: ZeroType,
+export const upsertCard = async (
+  db: DatabaseType,
   cardData: CardFormValues | CardFormValues[],
   cardIds?: string | string[],
 ): Promise<Card | Card[]> => {
@@ -237,8 +232,8 @@ export const upsert = async (
       cardId: idsArray[index] || idsArray[0], // Use first ID if not enough IDs provided
       changeSet: data,
     }));
-    await update(z, updates);
-    const result = await getMany(z, idsArray);
+    await updateCard(db, updates);
+    const result = await getManyCards(db, idsArray);
 
     if (!result) {
       throw new Error('Failed to retrieve updated cards');
@@ -250,17 +245,20 @@ export const upsert = async (
       return Array.isArray(result) ? result[0] : result;
     }
   } else {
-    const result = await insert(z, cardData);
+    const result = await insertCard(db, cardData);
     return Array.isArray(cardData) ? result : result[0];
   }
 };
 
-export const deleteCards = async (z: ZeroType, cardIds: string | string[]) => {
+export const removeCards = async (
+  db: DatabaseType,
+  cardIds: string | string[],
+) => {
   const idsArray = Array.isArray(cardIds) ? cardIds : [cardIds];
 
   if (idsArray.length === 1) {
     const cardId = idsArray[0];
-    const cardResult = await getOne(z, cardId);
+    const cardResult = await getOneCard(db, cardId);
 
     if (!cardResult) {
       return {
@@ -270,11 +268,11 @@ export const deleteCards = async (z: ZeroType, cardIds: string | string[]) => {
       };
     }
 
-    await z.mutate.card.delete({
+    await db.mutate.card.delete({
       id: cardId,
     });
 
-    await z.mutate.cardStudyState.delete({
+    await db.mutate.cardStudyState.delete({
       cardId,
     });
 
@@ -284,7 +282,7 @@ export const deleteCards = async (z: ZeroType, cardIds: string | string[]) => {
       error: null,
     };
   } else {
-    const cardsResult = get(z, idsArray);
+    const cardsResult = getManyCards(db, idsArray);
 
     if (!cardsResult || !Array.isArray(cardsResult) || !cardsResult.length) {
       return {
@@ -297,7 +295,7 @@ export const deleteCards = async (z: ZeroType, cardIds: string | string[]) => {
 
     const existingCards = cardsResult;
 
-    await z.mutateBatch(async tx => {
+    await db.mutateBatch(async tx => {
       for (const card of existingCards) {
         tx.card.delete({id: card.id});
       }

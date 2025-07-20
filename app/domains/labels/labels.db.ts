@@ -1,43 +1,29 @@
-import {user} from 'shared/user';
 import {nanoid} from 'nanoid';
+import {user} from 'shared/user';
 import {
   Label,
   LabelFormValues,
   LabelChangeSet,
 } from '@/domains/labels/labels.types';
-import {ZeroType} from 'zero/zero.types';
+import {DatabaseType} from 'zero/zero.types';
 import * as labelQueries from '@/domains/labels/labels.queries';
 
-export const getOne = async (
-  z: ZeroType,
-  labelId: string,
-): Promise<Label | undefined> => {
-  return labelQueries.getOne(z, labelId);
+export const getOneLabel = async (db: DatabaseType, labelId: string) => {
+  return labelQueries.getOneLabel(db, labelId);
 };
 
-export const getMany = async (
-  z: ZeroType,
-  labelIds: string[],
-): Promise<Label[]> => {
-  return labelQueries.getMany(z, labelIds);
+export const getManyLabels = async (db: DatabaseType, labelIds: string[]) => {
+  return labelQueries.getManyLabels(db, labelIds);
 };
 
-export const get = async (
-  z: ZeroType,
-  labelIds: string | string[],
-): Promise<Label | Label[] | undefined> => {
-  if (typeof labelIds === 'string') return getOne(z, labelIds);
-  return getMany(z, labelIds);
+export const getAllLabels = async (db: DatabaseType) => {
+  return labelQueries.getAllLabels(db, user.id);
 };
 
-export const getAll = async (z: ZeroType): Promise<readonly Label[]> => {
-  return labelQueries.getAll(z, user.id);
-};
-
-export const insert = async (
-  z: ZeroType,
+export const insertLabels = async (
+  db: DatabaseType,
   labelData: LabelFormValues | LabelFormValues[],
-): Promise<Label[]> => {
+) => {
   const labelsToInsert = Array.isArray(labelData) ? labelData : [labelData];
 
   const now = Date.now();
@@ -61,17 +47,17 @@ export const insert = async (
     };
   });
 
-  await z.mutateBatch(async tx => {
+  await db.mutateBatch(async tx => {
     for (const newLabel of newLabels) {
       await tx.label.insert(newLabel);
     }
   });
 
-  return getMany(z, labelIds);
+  return getManyLabels(db, labelIds);
 };
 
-const updateOne = async (
-  z: ZeroType,
+const updateOneLabel = async (
+  db: DatabaseType,
   labelId: string,
   changeSet: LabelChangeSet,
   options?: {
@@ -81,7 +67,7 @@ const updateOne = async (
 ): Promise<Label | undefined> => {
   const now = Date.now();
 
-  const labelResult = await getOne(z, labelId);
+  const labelResult = await getOneLabel(db, labelId);
 
   if (!labelResult || Array.isArray(labelResult))
     throw new Error('Label could not be updated because it was not found');
@@ -100,16 +86,16 @@ const updateOne = async (
   if (options?.tx) {
     await updateFn(options.tx);
   } else {
-    await z.mutateBatch(updateFn);
+    await db.mutateBatch(updateFn);
   }
 
   if (options?.skipReturn) return undefined;
 
-  return getOne(z, labelId);
+  return getOneLabel(db, labelId);
 };
 
-export const update = async (
-  z: ZeroType,
+export const updateLabels = async (
+  db: DatabaseType,
   updates:
     | string
     | Array<{labelId: string; changeSet: LabelChangeSet}>
@@ -121,28 +107,31 @@ export const update = async (
   },
 ): Promise<Label | Label[] | undefined> => {
   if (typeof updates === 'string' && changeSet) {
-    return updateOne(z, updates, changeSet, options);
+    return updateOneLabel(db, updates, changeSet, options);
   }
 
   const updatesArray = Array.isArray(updates)
     ? updates
     : [updates as {labelId: string; changeSet: LabelChangeSet}];
 
-  await z.mutateBatch(async tx => {
+  await db.mutateBatch(async tx => {
     for (const {labelId, changeSet} of updatesArray) {
-      await updateOne(z, labelId, changeSet, {tx, skipReturn: true});
+      await updateOneLabel(db, labelId, changeSet, {tx, skipReturn: true});
     }
   });
 
   return undefined;
 };
 
-export const deleteMany = async (z: ZeroType, labelIds: string | string[]) => {
+export const deleteManyLabels = async (
+  db: DatabaseType,
+  labelIds: string | string[],
+) => {
   const idsArray = Array.isArray(labelIds) ? labelIds : [labelIds];
 
   if (idsArray.length === 1) {
     const labelId = idsArray[0];
-    const labelResult = await getOne(z, labelId);
+    const labelResult = await getOneLabel(db, labelId);
 
     if (!labelResult) {
       return {
@@ -152,7 +141,7 @@ export const deleteMany = async (z: ZeroType, labelIds: string | string[]) => {
       };
     }
 
-    await z.mutate.label.delete({
+    await db.mutate.label.delete({
       id: labelId,
     });
 
@@ -162,7 +151,7 @@ export const deleteMany = async (z: ZeroType, labelIds: string | string[]) => {
       error: null,
     };
   } else {
-    const labelsResult = await getMany(z, idsArray);
+    const labelsResult = await getManyLabels(db, idsArray);
 
     if (!labelsResult || !labelsResult.length) {
       return {
@@ -175,7 +164,7 @@ export const deleteMany = async (z: ZeroType, labelIds: string | string[]) => {
 
     const existingLabels = labelsResult;
 
-    await z.mutateBatch(async tx => {
+    await db.mutateBatch(async tx => {
       for (const label of existingLabels) {
         tx.label.delete({id: label.id});
       }

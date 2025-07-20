@@ -1,24 +1,22 @@
-'use client';
-
 import {ReactNode} from 'react';
 import {HotkeysProvider} from 'react-hotkeys-hook';
 import {useKeyboardShortcuts} from '@/frontend/hooks/use-keyboard-shortcuts';
-import {ZeroType} from 'zero/zero.types';
+import {DatabaseType} from 'zero/zero.types';
 
 type KeyboardShortcutsProviderProps = {
+  db: DatabaseType;
   children: ReactNode;
   initialScopes?: string[];
-  z: ZeroType;
 };
 
 export const KeyboardShortcutsProvider = (
   props: KeyboardShortcutsProviderProps,
 ) => {
-  const {children, initialScopes = ['global'], z} = props;
+  const {children, initialScopes = ['global'], db} = props;
 
   // Note: Ensures the hook runs **after** the HotkeysProvider is initialized
   const KeyboardShortcutsInit = () => {
-    useKeyboardShortcuts(z);
+    useKeyboardShortcuts(db);
     return null;
   };
 

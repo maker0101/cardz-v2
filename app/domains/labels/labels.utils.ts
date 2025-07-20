@@ -1,16 +1,16 @@
-import {get} from '@/domains/labels/labels.db';
 import {type Label} from '@/domains/labels/labels.types';
 import {nanoid} from 'nanoid';
 import {user} from 'shared/user';
 import {Card} from '@/domains/cards/cards.types';
-import {type ZeroType} from 'zero/zero.types';
+import {type DatabaseType} from 'zero/zero.types';
+import {getManyLabels} from '@/domains/labels/labels.db';
 
 export const getLabelsByIds = async (
-  z: ZeroType,
+  db: DatabaseType,
   labelIds: string[],
 ): Promise<Label[]> => {
   if (!labelIds.length) return [];
-  const result = await get(z, labelIds);
+  const result = await getManyLabels(db, labelIds);
   return Array.isArray(result) ? result : [];
 };
 

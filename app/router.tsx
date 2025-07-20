@@ -1,12 +1,10 @@
 import {createRouter as createTanStackRouter} from '@tanstack/react-router';
 import {routeTree} from 'app/routeTree.gen';
-import {Zero} from '@rocicorp/zero';
-import {Schema} from 'zero/schema';
-import {Mutators} from 'zero/mutators';
 import {SessionContextType} from 'app/frontend/providers/session-provider';
+import {DatabaseType} from 'zero/zero.types';
 
 export interface RouterContext {
-  zero: Zero<Schema, Mutators>;
+  db: DatabaseType;
   session: SessionContextType;
 }
 
@@ -23,7 +21,7 @@ export function createRouter() {
     // deduping and caching.
     defaultPreloadGcTime: 0,
     context: {
-      zero: undefined as unknown as Zero<Schema, Mutators>, // populated in ZeroInit,
+      db: undefined as unknown as DatabaseType, // populated in ZeroInit,
       session: undefined as unknown as SessionContextType, // populated in SessionProvider
     } satisfies RouterContext,
   });

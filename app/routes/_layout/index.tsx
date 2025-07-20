@@ -1,16 +1,14 @@
 import {useQuery} from '@rocicorp/zero/react';
-import {type Schema} from 'zero/schema';
 import {createFileRoute, useRouter} from '@tanstack/react-router';
 import {useEffect, useState} from 'react';
 import {useDebouncedCallback} from 'use-debounce';
 import {Link} from 'app/frontend/ui/link';
-import {Mutators} from 'zero/mutators';
-import {Zero} from 'node_modules/@rocicorp/zero/out/zero-client/src/client/zero';
+import {DatabaseType} from 'zero/zero.types';
 
 const limit = 20;
 
-const artistQuery = (z: Zero<Schema, Mutators>, q: string | undefined) => {
-  let query = z.query.artist.orderBy('popularity', 'desc').limit(limit);
+const artistQuery = (db: DatabaseType, q: string | undefined) => {
+  let query = db.query.artist.orderBy('popularity', 'desc').limit(limit);
   if (q) {
     query = query.where('name', 'ILIKE', `%${q}%`);
   }
@@ -27,15 +25,15 @@ export const Route = createFileRoute('/_layout/')({
   },
   loaderDeps: ({search}) => ({q: search.q}),
   loader: async ({context, deps: {q}}) => {
-    const {zero} = context;
+    const {db} = context;
     console.log('preloading artists', q);
-    artistQuery(zero, q).preload({ttl: '5m'}).cleanup();
+    artistQuery(db, q).preload({ttl: '5m'}).cleanup();
   },
 });
 
 function HomePage() {
   const router = useRouter();
-  const {zero} = router.options.context;
+  const {db} = router.options.context;
 
   const [search, setSearch] = useState('');
   const qs = Route.useSearch();
@@ -48,7 +46,7 @@ function HomePage() {
   // cache them when the user has paused, which we know by when the
   // QS matches because we already debounce the QS.
   const ttl = search === searchParam ? '5m' : 'none';
-  const [artists, {type}] = useQuery(artistQuery(zero, search), {
+  const [artists, {type}] = useQuery(artistQuery(db, search), {
     ttl,
   });
 

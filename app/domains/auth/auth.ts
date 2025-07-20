@@ -1,6 +1,6 @@
 import {betterAuth} from 'better-auth';
 import {drizzleAdapter} from 'better-auth/adapters/drizzle';
-import {db} from '../../../backend/db/index';
+import {drizzleDb} from '../../../backend/db/index';
 import {must} from 'shared/must';
 import * as schema from '../../../backend/db/schema';
 import {createAuthMiddleware, jwt} from 'better-auth/plugins';
@@ -16,7 +16,7 @@ const clientSecret = must(
 );
 
 export const auth = betterAuth({
-  database: drizzleAdapter(db, {
+  database: drizzleAdapter(drizzleDb, {
     provider: 'pg',
     schema,
   }),

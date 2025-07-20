@@ -1,16 +1,16 @@
 import {type Label} from './labels.types';
 import {user} from 'shared/user';
 import {useQuery} from '@rocicorp/zero/react';
-import {ZeroType} from 'zero/zero.types';
-import * as labelQueries from '@/domains/labels/labels.queries';
+import {DatabaseType} from 'zero/zero.types';
+import {getAllLabels} from '@/domains/labels/labels.queries';
 
 export const useLabels = (
-  z: ZeroType,
+  db: DatabaseType,
 ): {
   labels: readonly Label[];
   isLoading: boolean;
 } => {
-  const query = labelQueries.getAll(z, user.id);
+  const query = getAllLabels(db, user.id);
 
   const [labels, details] = useQuery(query);
 

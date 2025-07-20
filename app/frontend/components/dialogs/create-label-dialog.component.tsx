@@ -1,8 +1,6 @@
-'use client';
-
-import React, { useState } from 'react';
-import { Button } from '@/frontend/ui/button';
-import { Input } from '@/frontend/ui/input';
+import React, {useState} from 'react';
+import {Button} from '@/frontend/ui/button';
+import {Input} from '@/frontend/ui/input';
 import {
   Dialog,
   DialogContent,
@@ -11,11 +9,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/frontend/ui/dialog';
-import { insert as insertLabel } from '@/domains/labels/labels.db';
-import { CreateLabelDialogProps } from '@/frontend/components/dialogs/dialogs.types';
+import {insertLabels as insertLabels} from '@/domains/labels/labels.db';
+import {CreateLabelDialogProps} from '@/frontend/components/dialogs/dialogs.types';
 
 export const CreateLabelDialog: React.FC<CreateLabelDialogProps> = ({
-  z,
+  db,
   onClose,
 }) => {
   const [labelName, setLabelName] = useState('');
@@ -23,7 +21,7 @@ export const CreateLabelDialog: React.FC<CreateLabelDialogProps> = ({
   const handleCreateLabel = async () => {
     if (!labelName.trim()) return;
 
-    await insertLabel(z, { name: labelName.trim() });
+    await insertLabels(db, {name: labelName.trim()});
     setLabelName('');
     onClose();
   };
@@ -37,18 +35,18 @@ export const CreateLabelDialog: React.FC<CreateLabelDialogProps> = ({
             Add a new label to organize your cards
           </DialogDescription>
         </DialogHeader>
-        <div className='space-y-4 py-4'>
-          <div className='space-y-2'>
-            <label htmlFor='name' className='text-sm font-medium'>
+        <div className="space-y-4 py-4">
+          <div className="space-y-2">
+            <label htmlFor="name" className="text-sm font-medium">
               Label name
             </label>
             <Input
-              id='name'
+              id="name"
               value={labelName}
-              onChange={(e) => setLabelName(e.target.value)}
-              placeholder='Enter label name'
+              onChange={e => setLabelName(e.target.value)}
+              placeholder="Enter label name"
               autoFocus
-              onKeyDown={(e) => {
+              onKeyDown={e => {
                 if (e.key === 'Enter') {
                   handleCreateLabel();
                 }

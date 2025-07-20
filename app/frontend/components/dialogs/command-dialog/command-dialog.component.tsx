@@ -1,5 +1,4 @@
 import {Fragment, useState} from 'react';
-
 import {
   CommandDialog as CommandDialogUI,
   CommandEmpty,
@@ -14,9 +13,9 @@ import {useGetCommandContent} from '@/frontend/components/dialogs/command-dialog
 import {DialogTitle, DialogDescription} from '@/frontend/ui/dialog';
 import {useSelectedCards} from '@/domains/cards/cards.hooks';
 
-export const CommandDialog: React.FC<CommandDialogProps> = ({z, onClose}) => {
+export const CommandDialog: React.FC<CommandDialogProps> = ({db, onClose}) => {
   const [inputValue, setInputValue] = useState('');
-  const content = useGetCommandContent(z, inputValue);
+  const content = useGetCommandContent(db, inputValue);
   const {selectedCardIds} = useSelectedCards();
 
   return (

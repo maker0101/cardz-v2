@@ -1,5 +1,3 @@
-'use client';
-
 import React, {useState} from 'react';
 import {Button} from '@/frontend/ui/button';
 import {Input} from '@/frontend/ui/input';
@@ -11,11 +9,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/frontend/ui/dialog';
-import {update as updateLabel} from '@/domains/labels/labels.db';
+import {updateLabels as updateLabel} from '@/domains/labels/labels.db';
 import {EditLabelDialogProps} from '@/frontend/components/dialogs/dialogs.types';
 
 export const EditLabelDialog: React.FC<EditLabelDialogProps> = ({
-  z,
+  db,
   label,
   onClose,
 }) => {
@@ -23,7 +21,7 @@ export const EditLabelDialog: React.FC<EditLabelDialogProps> = ({
 
   const handleEditLabel = async () => {
     if (!labelName.trim()) return;
-    await updateLabel(z, label.id, {name: labelName.trim()});
+    await updateLabel(db, label.id, {name: labelName.trim()});
     setLabelName('');
   };
 

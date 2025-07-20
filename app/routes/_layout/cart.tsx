@@ -1,20 +1,18 @@
 import {useQuery} from '@rocicorp/zero/react';
 import {createFileRoute, useRouter} from '@tanstack/react-router';
-import {Mutators} from 'zero/mutators';
-import {Schema} from 'zero/schema';
 import {CustomButton} from '@/frontend/ui/custom-button';
-import {Zero} from '@rocicorp/zero';
+import {DatabaseType} from 'zero/zero.types';
 
-const cartQuery = (z: Zero<Schema, Mutators>, userID: string | undefined) => {
-  return z.query.cartItem
+const cartQuery = (db: DatabaseType, userID: string | undefined) => {
+  return db.query.cartItem
     .related('album', album =>
       album.one().related('artist', artist => artist.one()),
     )
     .where('userId', userID ?? '');
 };
 
-const useCart = (zero: Zero<Schema, Mutators>, userID: string | undefined) => {
-  const [cartItems, {type}] = useQuery(cartQuery(zero, userID));
+const useCart = (db: DatabaseType, userID: string | undefined) => {
+  const [cartItems, {type}] = useQuery(cartQuery(db, userID));
   return {cartItems, type};
 };
 
@@ -23,20 +21,20 @@ export const Route = createFileRoute('/_layout/cart')({
   ssr: false,
   loader: async ({context}) => {
     console.log('preloading cart', context.session);
-    const {zero, session} = context;
+    const {db, session} = context;
     const userID = session.data?.userID;
     if (userID) {
-      cartQuery(zero, userID).preload({ttl: '5m'}).cleanup();
+      cartQuery(db, userID).preload({ttl: '5m'}).cleanup();
     }
   },
 });
 
 function CartPage() {
-  const {zero, session} = useRouter().options.context;
-  const {cartItems, type} = useCart(zero, session.data?.userID);
+  const {db, session} = useRouter().options.context;
+  const {cartItems, type} = useCart(db, session.data?.userID);
 
   const onRemove = (albumID: string) => {
-    zero.mutate.cart.remove(albumID);
+    db.mutate.cart.remove(albumID);
   };
 
   if (!session.data) return <div>Login to view cart</div>;

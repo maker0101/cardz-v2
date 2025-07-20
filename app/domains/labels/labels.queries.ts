@@ -1,15 +1,17 @@
-import {ZeroType} from 'zero/zero.types';
+import {DatabaseType} from 'zero/zero.types';
 
-export const getAll = (z: ZeroType, userId: string) => {
-  return z.query.label
-    .where('userId', '=', userId)
+export const getOneLabel = (db: DatabaseType, labelId: string) => {
+  return db.query.label.where('id', '=', labelId).one();
+};
+
+export const getManyLabels = (db: DatabaseType, labelIds: string[]) => {
+  return db.query.label
+    .where('id', 'IN', labelIds)
     .orderBy('createdAt', 'desc');
 };
 
-export const getOne = (z: ZeroType, labelId: string) => {
-  return z.query.label.where('id', '=', labelId).one();
-};
-
-export const getMany = (z: ZeroType, labelIds: string[]) => {
-  return z.query.label.where('id', 'IN', labelIds).orderBy('createdAt', 'desc');
+export const getAllLabels = (db: DatabaseType, userId: string) => {
+  return db.query.label
+    .where('userId', '=', userId)
+    .orderBy('createdAt', 'desc');
 };

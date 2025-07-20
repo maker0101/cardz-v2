@@ -1,4 +1,4 @@
-import {ZeroType} from 'zero/zero.types';
+import {DatabaseType} from 'zero/zero.types';
 
 export type CommandItem = {
   id: string;
@@ -15,6 +15,6 @@ export type CommandGroup = {
 };
 
 export type CommandDialogProps = {
-  z: ZeroType;
+  db: DatabaseType;
   onClose: () => void;
 };
